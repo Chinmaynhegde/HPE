@@ -1,0 +1,10 @@
+transformers
+bitsandbytes
+accelerate
+peft
+wandb
+datasets
+trl
+einops
+tokenizers
+tiktoken
