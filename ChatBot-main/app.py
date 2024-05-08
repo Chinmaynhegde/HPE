@@ -2,15 +2,9 @@ from flask import Flask, render_template, request, jsonify
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 import torch
 
-# Check if CUDA is available
-# if not torch.cuda.is_available():
-#     raise RuntimeError("CUDA is not available. This script requires CUDA to run.")
-
-# # Set the device to GPU
-# device = torch.device("cuda")
-
 # Set the model path
-MODEL_PATH = "Aditi25/Instruct_on_sharded"
+MODEL_PATH = "chinmayn/Falcon-sharded"
+
 
 # Initialize Flask application
 app = Flask(__name__)
@@ -32,6 +26,7 @@ def chat():
     msg = request.form.get("msg", "")
     return jsonify(response=generate_answer(msg))
 
+#below one is working one
 def generate_answer(question: str) -> str:
     # Assuming 'model' and 'tokenizer' are already loaded and 'device' is set
     prompt = f"<human>: {question}\n<assistant>:"
@@ -55,6 +50,7 @@ def generate_answer(question: str) -> str:
     assistant_start = "<assistant>:"
     response_start = response.find(assistant_start) + len(assistant_start)
     return response[response_start:].strip()
+
 
 if __name__ == '__main__':
     app.run()  
