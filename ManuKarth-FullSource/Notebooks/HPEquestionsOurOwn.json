@@ -1,0 +1,1250 @@
+{
+  "text": [
+    {
+      "question": "How are management switches typically paired in cluster systems, and what roles do the top and bottom switches in a stack usually play?",
+      "answer": "Management switches on cluster systems are paired into switch stacks, with two switches per stack. The top switch is typically the master switch, while the bottom switch is typically the slave switch."
+    },
+    {
+      "question": "What are the primary types of management switches in a cluster, and how does the discover command configure them?",
+      "answer": "A cluster has two primary types of management switches: spine switches and leaf switches. The discover command configures the spine switch first and then the leaf switches."
+    },
+    {
+      "question": "In what order does the discover command configure components in a cluster, and what manual configuration might be required for a hierarchical cluster with liquid-cooled hardware?",
+      "answer": "The discover command configures components in the following order: spine switch, leaf switches, rack leader controllers, flat compute nodes, and other resources. For a hierarchical cluster with liquid-cooled hardware, manual configuration of the CDU or CRC cooling equipment may be necessary, specifically assigning network ports to the correct cooling VLAN, typically VLAN 3."
+    },
+    {
+      "question": "What steps are involved in verifying the switch cabling and preparing for the configuration procedure?",
+      "answer": "To verify switch cabling and prepare for configuration, users should first visually inspect the system, noting the types of switches and their identifiers, as described on page 90. Within each stack, switches are labeled with identifiers such as MSWxx, where xx represents the switch number. In the spine switch stack, the master switch is labeled MSW0A, and the slave switch is labeled MSW0B. Users should also verify that only the admin node is powered on and connected, and all other nodes and switches are unplugged or powered off."
+    },
+    {
+      "question": "When should users remove cascade cables connecting slave switches together, and how can they complete this step?",
+      "answer": "Users should remove cascade cables connecting slave switches together only if they have two or more switch stacks. This step helps prevent switching loops. To remove cascade cables, users should locate the cables connecting the switch stacks and unplug the end from the lower switch in the neighboring stack. Additionally, they should unplug the cascading cables from the ports on the slave switches in the front of the switch stack, as shown in the provided figure. It's important to note that users should not unplug stacking cables in the rear of the switch stack."
+    },
+    {
+      "question": "What procedure should users follow to configure management switches with a cluster definition file?",
+      "answer": "To configure management switches with a cluster definition file, users should follow a specific procedure outlined on page 92 of the installation guide. This involves logging in as root to the admin node via an SSH connection and writing the cluster definition file to a location on the admin node, such as /var/tmp/config_file. Users should then plug in all switches and specify a site-specific IP address for the head gateway, if necessary. The spine switch stack attached to the admin node should be configured using the discover command, followed by additional discover commands for any secondary switch stacks. Finally, users should save the permanent configuration files locally on the admin node for backup and restore purposes using the switch config command."
+    },
+    {
+      "question": "How can users determine the types and identifiers of switches in their system?",
+      "answer": "Users can visually inspect the system and note the types of switches and their identifiers, such as MSWxx, where xx represents the switch number."
+    },
+    {
+      "question": "When should users unplug cascade cables connecting slave switches together?",
+      "answer": "Users should unplug cascade cables connecting slave switches together only if they have two or more switch stacks, to prevent switching loops."
+    },
+    {
+      "question": "What should users verify before proceeding with the switch cabling verification procedure?",
+      "answer": "Users should verify that only the admin node is plugged in and powered on, and all rack circuit breakers are powered off."
+    },
+    {
+      "question": "How can users configure management switches with a cluster definition file?",
+      "answer": "Users can configure management switches with a cluster definition file by logging in as root to the admin node via an SSH connection, writing the cluster definition file to a specified location, and using the discover command with appropriate parameters."
+    },
+    {
+      "question": "What step is necessary to save permanent configuration files for backup and restore purposes?",
+      "answer": "Users should enter the switchconfig command to save permanent configuration files locally on the admin node, specifying the switch number or keyword \"all\"."
+    },
+    {
+      "question": "What cautionary statement does HPE provide regarding the procedure for configuring switches without a cluster definition file?",
+      "answer": "HPE advises against this procedure due to its higher susceptibility to human error and the increased risk of devices having incorrect IP addresses."
+    },
+    {
+      "question": "What is the purpose of specifying a site-specific IP address for the head gateway?",
+      "answer": "Specifying a site-specific IP address for the head gateway allows users to set a non-default IP address for the spine switch stack, facilitating network configuration and management within the cluster."
+    },
+    {
+      "question": "What steps are involved in configuring the spine switch using the discover command?",
+      "answer": "Configuring the spine switch involves entering the discover command with appropriate parameters such as --mgmtswitch for switch identification and type=spine to specify the switch type."
+    },
+    {
+      "question": "How does the procedure ensure proper configuration of leaf switches in the absence of a cluster definition file?",
+      "answer": "Users repeat the configuration steps for leaf switches, adjusting the discover command parameters to reflect differences in switch types and configurations."
+    },
+    {
+      "question": "What actions occur when the discover command runs without reading a cluster definition file?",
+      "answer": "The switch or switch stack boots completely, sends out DHCPDISCOVER packets, associates with the admin node, accepts DHCP offers, and confirms interaction with DHCPACK requests."
+    },
+    {
+      "question": "What is the significance of configuring two IP addresses for each ICE compute or flat compute node?",
+      "answer": "Configuring two IP addresses facilitates communication on both the cluster management network and the administration network, enabling proper functionality of the compute nodes within the cluster."
+    },
+    {
+      "question": "Why is it essential to configure the NIC on the administration network for PXE boot from the first NIC?",
+      "answer": "This configuration ensures that the cluster manager can assign images to the nodes properly and simplifies the installation process for the operating system."
+    },
+    {
+      "question": "How can users save the cluster definition file after configuring the switches?",
+      "answer": "Users can use the discover command with the --show-configfile option to save the cluster definition file to a specified location."
+    },
+    {
+      "question": "What is the recommended course of action after configuring all management switches?",
+      "answer": "After configuring all management switches, users should proceed to configure chassis management controllers (CMCs) as per the next steps outlined in the documentation."
+    },
+    {
+      "question": "What are the potential consequences of failing to maintain specific conditions during the configuration process?",
+      "answer": "Failing to maintain specific conditions, such as disabling redundant Ethernet ports, can result in network loops, leading to downtime and disruptions in the entire management network."
+    },
+    {
+      "question": "What service runs on the admin node to handle DHCP packets from chassis management controllers (CMCs), and where can its log file be found?",
+      "answer": "The cmcdetectd service runs on the admin node to handle DHCP packets from CMCs, and its log file can be found at /var/log/cmcdetectd.log."
+    },
+    {
+      "question": "Explain the default VLAN configurations for CMCs and how they are connected to management switches in a clustered environment.",
+      "answer": "By default, CMCs have an untagged VLAN corresponding to their rack VLAN and a tagged VLAN for cooling. CMCs are connected to management switches according to specific port numbering rules, ensuring consistency across switches and racks."
+    },
+    {
+      "question": "Describe the automated method for configuring CMCs, including the necessary steps and monitoring process.",
+      "answer": "The automated method involves ensuring the cmcdetectd service is running, monitoring its progress, and then powering on CMCs rack by rack while observing the cmcdetectd log. Once all CMCs are configured, further actions can be taken based on the presence of liquid cooling cells or proceeding with the discover command."
+    },
+    {
+      "question": "Explain the manual method for configuring CMCs, detailing the required information and the steps involved.",
+      "answer": "The manual method requires information about rack VLANs, physical port connections, and management switches. It involves monitoring switchconfig logs, using switchconfig commands to configure switches manually based on provided information, and validating the configuration afterward."
+    },
+    {
+      "question": "What commands can be used to monitor the switchconfig log file and to ensure successful completion of commands sent for manual CMC configuration?",
+      "answer": "To monitor the switchconfig log file, the command is tail -f /var/log/switchconfig.log. To ensure successful completion of commands sent for manual CMC configuration, monitoring the output of switchconfig commands is essential."
+    },
+    {
+      "question": "Discuss the significance of maintaining consistency in port numbering and VLAN configurations when connecting CMCs to management switches.",
+      "answer": "Maintaining consistency ensures proper communication and functionality within the cluster environment, preventing configuration conflicts and ensuring seamless operation of CMCs and associated network infrastructure."
+    },
+    {
+      "question": "What actions should be taken after configuring all CMCs using either the automated or manual method?",
+      "answer": "After configuring all CMCs, users can proceed with additional steps based on the presence of liquid cooling cells or further cluster management tasks such as running the discover command."
+    },
+    {
+      "question": "Where can the cmcdetectd log file be found?",
+      "answer": "The cmcdetectd log file can be found at /var/log/cmcdetectd.log."
+    },
+    {
+      "question": "What is the default VLAN configuration for CMCs in a clustered environment?",
+      "answer": "By default, CMCs have an untagged VLAN corresponding to their rack VLAN and a tagged VLAN for cooling."
+    },
+    {
+      "question": "How does the automated method for configuring CMCs prevent configuration conflicts?",
+      "answer": "The automated method configures CMCs serially, handling one CMC configuration at a time to prevent configuration conflicts on management switches."
+    },
+    {
+      "question": "What information is required for the manual configuration method of CMCs?",
+      "answer": "The manual configuration method requires information about rack VLANs, physical port connections, and management switches."
+    },
+    {
+      "question": "What command is used to monitor the switchconfig log file for manual CMC configuration?",
+      "answer": "The command used is tail -f /var/log/switchconfig.log."
+    },
+    {
+      "question": "Why is it important to maintain consistency in port numbering and VLAN configurations for connecting CMCs to management switches?",
+      "answer": "Consistency ensures proper communication and functionality within the cluster environment, preventing configuration conflicts and ensuring seamless operation."
+    },
+    {
+      "question": "What actions should be taken after configuring all CMCs using either the automated or manual method?",
+      "answer": "After configuring all CMCs, users can proceed with additional steps based on the presence of liquid cooling cells or further cluster management tasks such as running the discover command."
+    },
+    {
+      "question": "How do you configure the switches attached to the liquid cooling cells in a hierarchical cluster?",
+      "answer": "To configure the switches attached to the liquid cooling cells in a hierarchical cluster, follow these steps: Gather information about the liquid cooling cell switches in your cluster, noting the switch identifiers and port identifiers. Log in as the root user to the admin node. Retrieve information about the VLANs configured at this time using the command cattr list -g mcell_vlan. Use the switchconfig set command to configure the CDU and CRC ports connecting to the liquid cooling cells. Specify the VLAN number, target ports, and switch ID number for each switch individually. Repeat the configuration step for each CDU and CRC attached to the system, resolving any errors encountered. Save the configuration to the switches' nonvolatile memory using the switchconfig config --save command. Back up the switch configuration to a file on the admin node using the switchconfig config --pull command. Proceed with verifying the cluster definition file and configuring the management switches."
+    },
+    {
+      "question": "What is the purpose of configuring cooling racks and CDUs in a hierarchical cluster?",
+      "answer": "The purpose is to ensure that each CRC port is connected to a CDU port, which in turn is connected to a cooling cell."
+    },
+    {
+      "question": "Why are statically assigned IP addresses critical for CDUs and CRCs in a cluster?",
+      "answer": "Statically assigned IP addresses ensure that these devices always have the same IP address, facilitating consistent and predictable communication within the cluster."
+    },
+    {
+      "question": "How can you retrieve information about the VLANs configured in a cluster?",
+      "answer": "You can use the command \"show vlan\" to retrieve information about the VLANs configured in a cluster."
+    },
+    {
+      "question": "Which command is used to configure CDU and CRC ports connecting to liquid cooling cells?",
+      "answer": "The command used is \"crc-cdu-port-config\"."
+    },
+    {
+      "question": "How can you determine the ID number of the management switch to which a CDU or CRC is attached?",
+      "answer": "You can use the command \"crc-cdu-show-attached-switch\" to determine the ID number of the management switch."
+    },
+    {
+      "question": "What are the steps for saving switch configuration to nonvolatile memory?",
+      "answer": "The steps include accessing the switch, entering configuration mode, and using the \"write memory\" command."
+    },
+    {
+      "question": "How do you back up switch configuration to a file on the admin node?",
+      "answer": "You can use the command \"copy running-config tftp\" and specify the TFTP server and file name."
+    },
+    {
+      "question": "When is the discover command used in a cluster?",
+      "answer": "The discover command is used when adding or removing nodes from the cluster."
+    },
+    {
+      "question": "What actions does the discover command perform on HA leader nodes?",
+      "answer": "It detects new nodes, configures them, and provisions them for HA on HA leader nodes."
+    },
+    {
+      "question": "What are the benefits of assigning flat compute nodes to network groups?",
+      "answer": "Benefits include improved network performance and easier management of network configurations."
+    },
+    {
+      "question": "How do you configure a highly available leader node using the discover command?",
+      "answer": "You specify the \"--ha-leader\" option in the discover command."
+    },
+    {
+      "question": "Which parameters are used to specify data network configurations in the discover command?",
+      "answer": "Parameters such as \"--vlan\", \"--dhcp\", and \"--static\" are used."
+    },
+    {
+      "question": "What is the purpose of the \"--skip-provision\" parameter in the discover command?",
+      "answer": "It skips the provisioning step for nodes that have already been provisioned."
+    },
+    {
+      "question": "How can you configure custom partitioning on a flat compute node using the discover command?",
+      "answer": "You can use the \"custom\" option in the discover command without editing the cluster configuration file."
+    },
+    {
+      "question": "What are the steps for configuring nodes and switches using the discover command?",
+      "answer": "The steps include discovering nodes, configuring network settings, provisioning nodes, and configuring switches."
+    },
+    {
+      "question": "What are the steps to configure the GUI on a client system outside of the cluster?",
+      "answer": "To configure the GUI on a client computer outside of the cluster system, follow these steps: Verify that Java 8+ is installed on the client computer. Open a browser and enter either the IP address or the fully qualified domain name (FQDN) of the admin node. Follow the instructions on the cluster manager splash page to download and install the GUI client."
+    },
+    {
+      "question": "How can the cluster manager web server be started on a non-default port?",
+      "answer": "To start the cluster manager web server on a non-default port, follow these steps: Use a text editor to adjust the settings in the file located at /opt/clmgr/etc/cmuserver.conf. Open the corresponding ports in the firewall."
+    },
+    {
+      "question": "What steps are involved in naming the storage controllers for clusters with a highly available (HA) admin node?",
+      "answer": "To name the storage controllers for clusters with an HA admin node, follow this procedure: From the admin node, execute the commands: # discover \\ --service 100,mgmt_net_macs=00:50:B0:AB:F6:EE,hostname1=unita,generic # discover \\ --service 101,mgmt_net_macs=00:50:B0:AB:F6:EF,hostname1=unitb,generic These commands configure hostnames and IP addresses for the storage controllers as unita and unitb, respectively, and also configure DHCP for automatic IP address assignment."
+    },
+    {
+      "question": "How can power operations be verified and power management be configured?",
+      "answer": "To verify power operations and configure power management, follow these guidelines: Power management service provides power and energy measurement, along with power limiting capabilities. Ensure that power limits are set lower than the actual power the node can generate. Refer to the HPE Performance Cluster Manager Power Management Guide for detailed information."
+    },
+    {
+      "question": "What are the steps to store and set site-specific management card (iLO or BMC) information for flat compute nodes?",
+      "answer": "To store and set site-specific management card information for flat compute nodes, follow these steps: Log into the admin node and use cmu_show_nodes command to display management card types. Use cmu_set_bmc_access command to initiate a dialog and store credentials for each management card type. Repeat the process for each management card type present in the cluster."
+    },
+    {
+      "question": "How can a static IP address be set for the baseboard management controller (BMC) in the admin node?",
+      "answer": "To set a static IP address for the BMC in the admin node, follow these steps: Log into the admin node and retrieve current network settings using ipmitool lan print 1. If necessary, disable InfiniBand switch monitoring using cattr set disableIbSwitchMonitoring true. Set the BMC to use a static IP address using ipmitool lan set 1 ipsrc static. Optionally, reset the static IP address using appropriate ipmitool commands. Repeat the procedure for the second admin node if configuring for high availability."
+    },
+    {
+      "question": "How do I install a software package?",
+      "answer": "Download the software, run the installer, choose options, complete installation, and run the software."
+    },
+    {
+      "question": "What should I do if I encounter an error during installation?",
+      "answer": "Retry installation, check system compatibility, verify installer integrity, disable antivirus/firewall, run installer as administrator, search for error messages, or contact support."
+    },
+    {
+      "question": "Where can I find the download link for the software package?",
+      "answer": "Visit the official website of the software or search for it on reputable software download platforms."
+    },
+    {
+      "question": "What are the system requirements for installing the software?",
+      "answer": "Check the software documentation or the website for minimum hardware specifications and supported operating systems."
+    },
+    {
+      "question": "Can I customize the installation process?",
+      "answer": "Yes, during installation, you can usually choose custom installation options such as installation directory, additional components, or shortcuts."
+    },
+    {
+      "question": "How long does the installation process typically take?",
+      "answer": "The duration varies depending on the size of the software and the speed of your computer but generally ranges from a few minutes to half an hour."
+    },
+    {
+      "question": "Is it necessary to restart my computer after installation?",
+      "answer": "In some cases, yes. The installer may prompt you to restart your computer to complete the installation process and ensure proper functionality."
+    },
+    {
+      "question": "What should I do if the installation process freezes or hangs?",
+      "answer": "Wait for a reasonable amount of time to see if it progresses. If it doesn't, you can try closing the installer and restarting the process. If the issue persists, seek assistance from technical support."
+    },
+    {
+      "question": "Can I uninstall the software if I no longer need it?",
+      "answer": "Yes, most software can be uninstalled through the Control Panel on Windows or the Applications folder on macOS. You can also use third-party uninstaller programs for a more thorough removal."
+    },
+    {
+      "question": "What is the purpose of configuring compute nodes into an array for HPE Message Passing Interface (MPI) programs?",
+      "answer": "Configuring compute nodes into an array enables Array Services to perform authentication and coordination functions when running MPI programs from HPE."
+    },
+    {
+      "question": "Can admin nodes or leader nodes be included in arrays, and what are the differences between hierarchical and flat clusters?",
+      "answer": "Admin nodes cannot be included, but leader nodes can be in flat clusters. However, neither can be included in hierarchical clusters due to their role."
+    },
+    {
+      "question": "How can system information about available nodes and images be retrieved using command-line tools?",
+      "answer": "System information can be obtained using commands like cnodes to display available nodes and cinstallman to show available system images."
+    },
+    {
+      "question": "What security options are available for Array Services, and how are they configured?",
+      "answer": "Security options include MUNGE security, none, or simple. Configuration is done by specifying the desired option during Array Services setup."
+    },
+    {
+      "question": "What steps are involved in preparing system images for Array Services, including authentication file configuration?",
+      "answer": "Steps include cloning existing images, copying authentication files, and configuring security options like MUNGE or none."
+    },
+    {
+      "question": "How are new compute services node images and compute node images assigned to their respective nodes?",
+      "answer": "New images are assigned using the cinstallman command with parameters specifying the image and target node(s)."
+    },
+    {
+      "question": "What actions are required to distribute new images to all nodes in the array?",
+      "answer": "Distribution involves assigning new images to nodes and rebooting them using commands like cinstallman and cpower."
+    },
+    {
+      "question": "What troubleshooting steps can be taken if a configuration change does not have the intended effect?",
+      "answer": "Troubleshooting involves editing node images, reconfiguring custom scripts, or verifying daemon statuses."
+    },
+    {
+      "question": "How can one verify if essential daemons like clmgr-power and smc-admind are running?",
+      "answer": "Daemon statuses can be checked using commands like ps or service to ensure they are active and running."
+    },
+    {
+      "question": "Are there specific considerations for troubleshooting UDPcast transport failures?",
+      "answer": "Troubleshooting UDPcast issues involves checking network configurations, firewall settings, and ensuring proper daemon operation."
+    },
+    {
+      "question": "How can you ensure that the clmgr-power daemon is running on the admin node?",
+      "answer": "Log into the admin node as the root user and execute the command systemctl status clmgr-power to check the status of the daemon. If it's running properly, the output should indicate that the daemon is active."
+    },
+    {
+      "question": "What steps are involved in troubleshooting a cluster manager installation?",
+      "answer": "Troubleshooting begins with verifying the status of critical daemons such as clmgr-power and smc-admind. This involves using commands like systemctl status to check if the daemons are active and running as expected."
+    },
+    {
+      "question": "How can you verify that the smc-admind daemon is running on the admin node?",
+      "answer": "By logging into the admin node as the root user and executing the command systemctl status smc-admind, one can determine whether the daemon is active. The output should indicate an 'active' status if the daemon is running properly."
+    },
+    {
+      "question": "In hierarchical clusters, how can you ensure that the smc-leaderd daemon is running?",
+      "answer": "Log into the admin node as root and execute the command systemctl status smc-leaderd to verify the status of the daemon. If it's running as expected, the output should indicate an 'active' status."
+    },
+    {
+      "question": "How do you check if the icerackd daemon is running on a hierarchical cluster?",
+      "answer": "Use the command systemctl status icerackd on the admin node to verify the status of the daemon. If it's running properly, the output should indicate that the daemon is active."
+    },
+    {
+      "question": "How can you utilize the switchconfig command to manage switches?",
+      "answer": "The switchconfig command allows you to display switch settings and configure switches. To access help and examples, execute switchconfig --help. For detailed information on specific subcommands, use switchconfig subcommand --help."
+    },
+    {
+      "question": "What can be done if ICE compute nodes in a hierarchical cluster are slow to boot?",
+      "answer": "Troubleshoot by verifying the leader node controller, examining the file transport method, updating bonding modes, and retrieving switch MAC address information using commands like lspci and switchconfig find."
+    },
+    {
+      "question": "How do you retrieve MAC address information for switches?",
+      "answer": "Utilize the switchconfig find command to identify the switch where a given MAC address exists. The command displays information about physical ports and switches, aiding in troubleshooting network connectivity."
+    },
+    {
+      "question": "What is the procedure for running the cm node add command on a cluster without leader nodes?",
+      "answer": "Follow the specific steps outlined in the procedure, which involve logging into the admin node, activating the NFS compute node image if necessary, configuring the management switches into the cluster, changing the management switch password, saving the configuration, and configuring the compute nodes into the cluster."
+    },
+    {
+      "question": "How can I determine the MAC address for an ARCS component?",
+      "answer": "To determine the MAC address for an ARCS component, you can use the switchconfig command."
+    },
+    {
+      "question": "How can I configure power distribution units (PDUs) into the cluster?",
+      "answer": "Create a file for the PDUs using a text editor, include information such as the network and geographic location settings, save and close the file, and use the cm node add command to configure the PDUs into the cluster."
+    },
+    {
+      "question": "What is the procedure for configuring compute nodes that are not under the control of a leader node?",
+      "answer": "To configure compute nodes that are not under the control of a leader node, you can use either a cluster definition file with the cm node add command or the cm node discover command."
+    },
+    {
+      "question": "What is the purpose of configuring HPE Adaptive Rack Cooling Systems (ARCS) components",
+      "answer": "The purpose is to enable the monitoring of cooling component alerts using cluster manager tools for HPE Cray XD clusters and HPE Apollo clusters without leader nodes. "
+      },
+      {
+      "question": "How do you configure an HPE Adaptive Rack Cooling System (ARCS) component?",
+      "answer": "You can configure an ARCS component by logging in as the root user to the admin node, obtaining the MAC address of the ARCS component, and then using the cm cooldev arcs add command in the appropriate format."
+      },
+      {
+      "question": "What is the procedure for obtaining the MAC address of an ARCS component?",
+      "answer": "To obtain the MAC address of an ARCS component, you can use the switchconfig command. This command helps determine the MAC address for a cooling component. "
+      },
+      {
+      "question": "What are the different formats for using the cm cooldev arcs add command to enable the ARCS component?",
+      "answer": "Format 1 - Adds the ARCS component to the cluster based on its MAC address:\ncm cooldev arcs add -m component_mac_addr -n hostname [-i ip_addr]\nUse this command format the first time an ARCS component is added to the cluster. This command requires you to provide the MAC address and a hostname. \nFormat 2 - Adds the ARCS component to the cluster using a previously assigned IP address:\ncm cooldev arcs add -n hostname -i ip_addr \nUse this format, if the IP address was statically configured, is reachable, and is active on the ARCS component."
+      },
+      {
+      "question": "How do you repeat the configuration steps for additional ARCS components?",
+      "answer": "You can repeat the configuration steps for additional ARCS components by logging in as the root user to the admin node, obtaining the MAC address of each additional ARCS component, and then using the cm cooldev arcs add command for each component as needed."
+      },
+      {
+      "question": "What is the purpose of the switchconfig command in this procedure?",
+      "answer": "The switchconfig command is used to determine the MAC address for a cooling component in a cluster."
+      },
+      {
+        "question": "How to permit remote access to the service node?",
+        "answer": "Complete this procedure in the following circumstances: \n • If you specified -A munge or -A simple for authentication \n Or \n • If you specified -A none for authentication, and you want to permit users to log into a service node remotely to submit MPI from HPE programs. The service node is assumed to be a compute node. \n The following procedure assumes that you want to permit job queries and commands on the service node. It explains how to copy the array daemon files to the admin node. \n Procedure: \n 1. Log into one of the service nodes as the root user. \n 2. Copy the arrayd.auth file and the arrayd.conf files from the service node to the new service node image on the admin node. \n Enter the following command: \n # scp /etc/array/arrayd.* \n admin:/opt/clmgr/image/images/service_image/etc/arrayd.* \n For service_image, specify the service node image on the admin node. \n Enter this command all on one line. The command in this step uses a backslash (\\) character to continue the command to the following line. \n For example: \n # scp /etc/array/arrayd.* \n admin:/opt/clmgr/image/images/sles15spX.prod2/etc/arrayd.* \n 3. Copy the arrayd.auth file and the arrayd.conf files from the service node to the new compute node im \n on the admin node. \n Enter the following command: \n # scp /etc/array/arrayd.* \n admin:/opt/clmgr/image/images/compute_image/etc/arrayd.* \n For compute_image, specify the compute node image on the admin node. This is a compute node image. \n Enter this command all on one line."
+      },
+      {
+        "question": "How to prepare the array Services images? ",
+        "answer": "1. Log into the admin node as the root user. \n 2. Use two cm image copy commands to clone the following: \n• One of the images that resides on a service node \nAnd \n• One of the images that resides on a compute node \n The format is as follows: \n cm image copy -o existing_image -i new_image \n For example, the following command copies the first-generation compute node production image to a new, second generation production image: \n# cm image copy -o sles15spX.prod1 -i sles15spX.prod2 \n3. Enter the following command to change to the system images directory: \n# cd /opt/clmgr/image/images \n4. (Optional) Use the cp command to copy the MUNGE key from the new service node image to the new compute node image \nComplete this step if you want to configure the additional security that MUNGE provides. \nThe MUNGE key resides in /etc/munge/munge.key and must be identical on all the nodes that you want to \ninclude in the array. The copy command is as follows: \ncp /opt/clmgr/image/images/new_service_image/etc/munge/munge.key  \n/opt/clmgr/image/images/new_compute_image/etc/munge/munge.key \nFor example: \n# cp /opt/clmgr/image/images/sles15spX.prod2/etc/munge/munge.key  \n/opt/clmgr/image/images/ice-sles15spX.prod2/etc/munge/munge.key \n5. Use the following command to install the new image on the service node: \ncm node provision -n hostname(s) -i new_service_image -s \nFor example, the following command installs the new image on node n1: \n# cm node provision -n n1 -i sles15spX.prod2 -s \n6. Use the ssh command to log into the service node from which you expect users to run MPI from HPE programs. \nFor example, log into n1. \n7. Use the arrayconfig command to configure the service node and compute nodes into an array. \nYou can specify more than one service node. \nThe arrayconfig command creates the following files on the compute service node to which you are logged in: \n• /etc/array/arrayd.conf \n• /etc/array/arrayd.auth \nEnter the arrayconfig command in the following format: \n/usr/sbin/arrayconfig -a arrayname -f -m -A method nodes ..."
+      },
+      {
+        "question": "How to plan the configuration?",
+        "answer": "1. Log into the admin node as the root user. \n2. Verify that the HPE MPI is installed on the cluster. \nIf HPE MPI is not installed on the admin node, complete the following steps: \n• On RHEL systems, enter the following command: \n# cm node dnf -n admin 'groupinstall HPE*MPI' \n• On SLES systems, enter the following command: \n# cm node zypper -n admin 'groupinstall HPE*MPI' \n3. Use the cm node show command to display a list of available nodes, and decide which nodes you want to include in the array. \nFor example: \nTo display information about compute nodes, enter the following command: \n# cm node show -t system compute \nThe command output includes information about nodes that might be configured as service nodes at this time. \n4. Display a list of the available system images, and decide which images you want to edit \nThe output includes image sles15spX.prod1. The sles15spX.prod1 image is installed on a compute node that is configured as a service node. Image sles15spX.prod1 is based on image sles15spX, but it can include software to support user logins and a backup DNS server. \nAll system images are stored in the following directory: \n/opt/clmgr/image/images \nFor each of these images, the associated kernel is 3.0.101-94-default. \nThe examples in this Array Services configuration procedure add the Array Services information to the customized, production images with the .prod1 su„ix. \n5. Decide what kind of security you want to enable. \nArray Services includes its own authentication and security. If your site requires additional security, you can configure \nMUNGE security, which the installation includes. Your security choices are as follows: \n• munge on all the nodes you want to include in the array. Configures additional security provided by MUNGE. The installation process installs MUNGE by default. If you decide to use MUNGE, the MPI from HPE configuration process explains how to enable MUNGE at the appropriate time. \n• none on the service nodes and none on the compute nodes \nor \nnoremote on the service nodes and none on the compute nodes These specifications have the following e„ects: \n◦ When you specify none on all the nodes you want to include in the array, all authentication is disabled. \n◦ When you specify the following, users must run their jobs directly from the service nodes: \n– noremote on the service nodes \nAnd \n– none on the compute nodes \nIn this case, users cannot submit MPI from HPE jobs remotely. \n• simple (default). Generates hostname/key pairs by using either the OpenSSL, rand command, 64-bit values (if available) or by using $RANDOM Bash facilities."
+      },
+      {
+        "question": "How to configure Array Services for HPE Message Passing Interface (MPI) programs?",
+        "answer": "You can include the admin node in an array. \n  For general Array Services configuration information, see the manpages. The Array Services manpages reside on the admin node. If the HPE Message Passing Interface (MPI) software is installed on the admin node, you can retrieve the following manpages: \n • arrayconfig(1M), which describes how to use the arrayconfig command to configure Array Services. \n • arrayconfig_smc(1M), which describes Array Services configuration characteristics that are specific to clusters. \n The procedures in the following topics assume the following: \n • You want to create new a master image for the compute nodes configured for computing. \n And \n • You want to configure a new master image for the compute nodes configured for user services. \n After you create the images, you can push out the new images. \n The alternative is to configure Array Services directly on the nodes themselves. This method, however, leaves you with an Array Services configuration that is overwritten the next time someone pushes new software images to the cluster nodes. \n Procedure: \n 1. Planning the configuration \n 2. Preparing the Array Services images \n 3. Complete one of the following: \n • (Conditional) Permitting remote access to the service node \n Or \n • (Conditional) Preventing remote access to the service node \n 4. Distributing images to all the nodes in the array \n 5. Power cycling the nodes and pushing out the new images "
+      },
+      {
+        "question": "How to set a static IP address for the node controller in the admin node?",
+        "answer": "Complete the procedure in this topic if one or both of the following are true: \n • Your site practices require a static IP address for the node controller. \n • You want to configure a high availability (HA) admin node. In this case, perform this procedure on the node controllers on each of the two admin nodes. \n When you set the IP address for the node controller on the admin node, you ensure access to the admin node when the site DHCP server is inaccessible. \n The following procedures explain how to set a static IP address. \n Method 1 -- To change from the BIOS \n Use the BIOS documentation for the admin node. \n Method 2 -- To change the IP address from the admin node \n Procedure: 1. Log into the admin node as the root user. \n2. Enter the following command to retrieve the current network settings: \n# ipmitool lan print 1 \n3. In the output from the preceding command, look for the IP Address Source line and the IP Address line. \nNote the IP address in this step and decide whether this IP address is acceptable. The rest of this procedure explains how to keep this IP address or to set a di„erent static IP address. \n4. Enter the following command to specify that you want the node controller to have a static IP address: \n# ipmitool lan set 1 ipsrc static \nThe command in this step has the following e„ect: \n• The command specifies that the IP address on the node controller is a static IP address. \n• The command sets the IP address to the IP address that is currently assigned to the node controller. \nTo set the IP address to a di„erent IP address, proceed to the following step. If the current IP address is acceptable, you do not need to perform the next step. \n5. (Conditional) Reset the static IP address. \nComplete this step to set the static IP address di„erently from the current IP address. Enter ipmitool commands in the following format: \nipmitool lan set 1 ipaddr ip_addr \nipmitool lan set 1 netmask netmask \nipmitool lan set 1 defgw gateway \nFor example, to set the IP address to 100.100.100.100, enter the following commands: \n# ipmitool lan set 1 ipaddr 100.100.100.100 \n# ipmitool lan set 1 netmask 255.255.255.0 \n# ipmitool lan set 1 defgw 192.168.8.255 \n6. (Conditional) Repeat the preceding steps on the second admin node. \nComplete this procedure again only if you want to configure a second admin node for a two-node high availability cluster"
+      },
+      {
+        "question": "How to configure a back-up domain name service (DNS) server?",
+        "answer": "1. Through an ssh connection, log into the admin node as the root user. \n 2. Enter the following command to retrieve a list of available compute nodes: \n # cnodes --compute \n The preceding command lists all nodes that are classified as compute nodes, so the list includes fabric management nodes. Select a compute node for use as the backup DNS. Do not select a fabric management node for the backup DNS. \n 3. Enter the following command to start the cluster configuration tool: \n # /opt/sgi/sbin/configure-cluster \n 4. On the Main Menu screen, select D Configure Domain Name System (DNS), and select OK. \n 5. On the Domain Name System (DNS) Menu screen, select B Configure Backup DNS Server (optional), and select OK. \n 6. On screen that appears, enter the identifier for the compute node that you want to designate as the backup DNS, and select OK. \n For example, you could configure compute node n101 as the host for the backup DNS server. \n To disable this feature, select Disable Backup DNS from the same menu and select Yes to confirm your choice."
+      },
+      {
+        "question": "How to retrieve the DNS search order?",
+        "answer": "1. Log into the admin node as the root user. \n 2. Use the following cadmin command to show the DNS search order: \n cm node show --domain-search-path [-n node] \n For node, specify a node hostname. Specify this optional parameter when you want to retrieve the search path for a specific node. Do not specify this parameter if you want to retrieve the global domain search path. \n Example 1. The following command retrieves the global domain search path: \n # cm node show -g --domain-search-path \n ib0.cm.clusterdomain.com,head.cm.clusterdomain.com \n Example 2. The following command retrieves the domain search path for one node, n0: \n # cm node show --domain-search-path -n n0 \n head.cm.clusterdomain.com,ib0.cm.clusterdomain.com "
+      },
+      {
+        "question": "How to configure the DNS search order?",
+        "answer": "1. Log into the admin node as the root user. \n 2. Use the following cm node set command to set the DNS resolution order: \n cm node set [-g] [-n node] --domain-search-path new_domain_search_path \n The variables are as follows \nExample 1. The following command sets a global domain search path: \nadmin:~ # cm node set -g --domain-search-path ib0.cm.clusterdomain.com.com,head.cm.clusterdomian.com \nExample 2. The following command sets the domain search path for n0: \nadmin:~ # cm node set -n n0 --domain-search-path head.cm.clusterdomain.com,ib0.cm.clusterdomain.com"
+      },
+      {
+        "question": "How do I analyze my environment?",
+        "answer": "Sometimes a host includes multiple network interfaces. \n A command that does not specify the subdomain of .gbe or .ib0 uses the DNS search path to determine the IP address to return, as follows: \n • The host lookup command returns the ib0 IP address when the DNS search path is one of the following: \n ◦ ib0.cm.clusterdomain.com cm.clusterdomain.com \n or \n ◦ ib0.cm.clusterdomain.com gbe.cm.clusterdomain.com cm.clusterdomain.com \n • The host lookup command returns the gbe IP address when the search path is one of the following: \n ◦ gbe.cm.clusterdomain.com cm.clusterdomain.com \n or \n ◦ gbe.cm.clusterdomain.com ib0.cm.clusterdomain.com cm.clusterdomain.com \n • If neither ib0 nor gbe are in the DNS search path, the host lookup command returns the first entry in the DNS configuration file. \n When searching, specify the subdomains in the same search order as the domains are defined. \n The DNS search order is more important when nodes with di„erent interfaces try to reach each other. For example, if the admin node does not have an ib0 interface, gbe needs to be first in the DNS search path for the admin node itself. \n If IP address information for a node is in the hosts file, the system ignores the DNS search path. \n The following topics explain how to view or configure the global or per-node search order: \n • Configuring the DNS search order \n• Retrieving the DNS search order "
+      },
+      {
+        "question": "Tell me about adjusting the domain name service (DNS) search order.",
+        "answer": "A DNS search path lists the order of subdomains to try when you (or a program) need to translate a hostname into an IP address. \n If you use DNS as the method to convert hostnames into IP addresses, you can configure the following: \n • A specific subdomain is the first IP address to be resolved. In addition, you can specify more than one subdomain and the order in which each subdomain is to be searched. \n • A DNS resolution specification that applies to the cluster globally or only for a specific node. \n The following are examples of subdomains that you can specify: \n • HPE Slingshot interconnect IP addresses. For example, hsn0.cm.clusterdomain.com or \n hsn1.cm.clusterdomain.com. \n • InfiniBand fabric IP addresses. For example, ib0.cm.clusterdomain.com or\n ib1.cm.clusterdomain.com. \n  • Management fabric IP addresses. For example, head.cm.clusterdomain.com, \n  hostmgmt.cm.clusterdomain.com, or gbe.cm.clusterdomain.com. \n  • Public or external IP addresses. For example, cm.clusterdomain.com or public.clusterdomain.com. \n  The cluster manager sets the DNS search order after you run the cluster configuration tool. However, you can change the domain search order at any time after the cluster is installed and configured. \n  For more information, see the resolv.conf manpage. \n  The following topics include information about how to analyze, view, or configure search order: \n  • Analyzing your environmen \n• Configuring the DNS search orde \n• Retrieving the DNS search order"
+      },
+      {
+        "question": "How to name the storage controllers for clusters with a system admin controller high availability (SAC HA) admin node?" ,
+        "answer": "1. Log into the admin node as the root user. \n 2. From the admin node, enter the following commands: \n # cm node add --node-def='hostname1=unita,internal_name=service100,mgmt_net_macs=00:50:B0:AB:F6:EE, \n generic' --skip-switch-config --skip-refresh-netboot \n # cm node add --node-def='hostname1=unitb,internal_name=service101,mgmt_net_macs=00:50:B0:AB:F6:EF, \n generic' --skip-switch-config --skip-refresh-netboot \n The commands in this step accomplish the following: \n • The commands configure hostnames and IP addresses for the storage controllers. These host names are unita and unitb. \n • The commands configure DHCP so that the storage devices automatically receive an IP address. "
+      },
+      {
+        "question": "How to customize the nodes?",
+        "answer": "You can use post-installation scripts to customize operations on compute nodes. The scripts can enable additional software, append data to configuration files, configure supplemental network interfaces, and perform other operations. For information about these scripts, see the following file: \n /opt/clmgr/image/scripts/post-install/README"
+      },
+      {
+        "question": "How to start the cluster manager web server on a non-default port?",
+        "answer": "1. On the admin node, use a text editor to adjust the settings in the following file:\n /opt/clmgr/etc/cmuserver.conf \n2. Open the corresponding ports in the firewall. "
+      },
+      {
+        "question": "How to backup the cluster?",
+        "answer": "For information about how to back up the cluster, see the following: HPE Performance Cluster Manager Administration Guide At this time, make sure to back up the admin node and the cluster configuration files. Whenever you make significant changes to the cluster configuration, back up the cluster."
+      },
+      {
+        "question": "What does the cm controller delete command do?",
+        "answer": "The cm controller delete command deletes a controller from the cluster database. For more information about this command, enter the following:  # cm controller delete -h  "
+      },
+      {
+        "question": "What does the cm controller show command do?",
+        "answer": "The cm controller show command displays information for all controllers of all types. If you enter the command without any arguments, it displays all the controllers in the cluster. For example:: # cm controller show"
+      },
+      {
+        "question": "What does the cm controller add command do?",
+        "answer": "The cm controller add command adds an external switch controller or a Gigabyte controller to the cluster database. For more information, enter the following command:\n # cm controller add -h"
+      },
+      {
+        "question": "How to add controllers manually?",
+        "answer": "1. Use the cm controller add command to configure the controller into the cluster database. \nThe format of this command is as follows: \n cm controller add -c hostname -t controller_type -m mac_address -u username -p password \n 2. Enter the cm controller show command to display the information for the controller you just added. \nThe format for this command is as follows: \ncm controller show -c hostname \nFor hostname, enter the hostname of the controller you just added. \nFor example: \n# cm controller show -c x9000c1r3b0 \nNAME TYPE ADMINISTRATIVESTATUS PROTOCOL CHANNEL MACADDRESS IPADDRESS IPV6ADDRESS \nx9000c1r3b0 cmm_switch_controller online None None XX:XX:XX:XX:XX:XX XX.XXX.X.X None \n3. Repeat the preceding steps to configure all controllers into the cluster. \nNOTE: If you have many controllers, you can create a file with controller information and specify that file as an argument to the following command: \ncm node add -c input_file \nThis single command adds multiple controllers. For more information, enter the following command: \n# cm node add -h"
+      },
+      {
+        "question": "How to configure compute nodes without a cluster definition file by using the cm node discover command?",
+        "answer": "1. Verify that the new compute nodes are cabled and plugged in. \n2. Log into the admin node as the root user. \n 3. Enter the following command to create a pool of IP addresses, with a short lease time, in the DHCP service: \n # cm node discover enable \n If necessary, specify additional parameters. For example, you can specify the following: \n • A specific subnet for the pool of IP addresses. \n • A specific miniroot for operating system discovery. \n 4. Manually press the power-on button for each of the new compute nodes. \n As each compute node powers up, the cluster manager grants a leased IP address from the pool, and the miniroot environment boots. \n 5. Enter the following command and observe the leased IP address information: \n # cm node discover status \n This command lists all the leased IP addresses and uses ssh to connect to each of these leased IP addresses. The command is trying to detect whether the nodes have PXE booted the cluster manager miniroot operating system. When the ssh attempt is successful, the cluster is in contact with the new compute node. \n 6. Make sure that the cm node discover status command shows all the nodes you want to add \n  Do not proceed to the next step until all nodes are shown in the output. \n 7. Enter the cm node discover mkconfig command, in a format similar to the following, to generate a cluster definition file for the new nodes: \n cm node discover mkconfig -o \"bmc_username=uname, bmc_password=pwd\" \ncluster_definition_file \n The BMC credentials are required. This command creates a cluster definition file with very minimal entries for each new node. To add other common settings per node, expand the content in the -o option. For example, to configure the console to be ttyS1, change the -o option to the followin \n-o “bmc_username=username, bmc_password=password, console_device=ttyS \nFor more information about the settings you can include on the -o option, see the followin \nSpecifying configuration attribut \n8. (Optional) Add node-specific settings in the cluster definition fi \nAt this point, you have a cluster definition file. If you want to specify node-specific settings, edit the cluster definition file no \n9. Enter the cm node discover add command, in the following format, to add the new compute node to the cluster manager databas \ncm node discover add [-s] [-i image] [-d disk] cluster_definition_fi \nThis command adds the new nodes and resets the node controllers so that they pick up appropriately configured IP addresse \n10. Enter the following command to delete the pool of IP addresses from the DHCP servic \n# cm node discover disable"
+      },
+      {
+        "question": "How to configure compute nodes with a cluster definition file and the cm node add command?",
+        "answer": "1. Obtain or create a cluster definition file that includes compute node information. \n Include configuration attributes for the MAC addresses, IP addresses, and other information. \n For example, assume that computes.config is a cluster definition file with the following contents: \n hostname1=n1,mgmt_bmc_net_macs=00:11:22:33:44:44,mgmt_net_macs=00:11:22:33:44:45, \n mgmt_net_ip=172.23.1.1,mgmt_bmc_net_ip=172.24.1.1,mgmt_net_name=head,mgmt_bmc_net_name=head-bmc,card_type=iLO, \n bmc_username=admin,bmc_password=admin,baud_rate=115200,mgmt_net_bonding_mode=active-backup,mgmt_net_interfaces=eno1, \n redundant_mgmt_network=no,rootfs=disk,conserver_logging=yes,console_device=ttyS0,dhcp_bootfile=grub2,transport=udpcast, \n switch_mgmt_network=yes \n 2. Enter the following command: \n cm node add -c cluster_definition_file_for_new_nodes \n For cluster_definition_file_for_new_nodes, specify the name of your cluster definition file. \n For example: \n # cm node add -c computes.confi \n  3. Use the cm node provision command to provision the new compute nodes with an image and (optionally) to power cycle the new compute nodes."
+      },
+      {
+        "question": "How to configure compute nodes that are not under the control of a leader node?",
+        "answer": "1. Enter the following command, examine the output, and verify that all compute nodes have been added to the cluster: \n# cm node show \n If a compute node resides in a chassis, it should appear in the command output. If a node that resides in a chassis does not appear in the command output use the cmcinventory service to add the node into the cluster. \n If a compute node does not appear in the command output because it is not yet configured into the cluster, continue with this procedure. This is the case for nodes that are not under the control of a leader node. For example, this is the case for compute nodes deployed as login nodes. \n 2. Use one or both of the following procedures to configure compute nodes into the cluster: \n • Configuring compute nodes with a cluster definition file and the cm node add command. Use this ommand if you have a cluster definition file that includes the compute nodes. \n • Configuring compute nodes without a cluster definition file by using the cm node discover command. Use this procedure if you do not have a cluster definition file that includes the compute nodes."
+      },
+      {
+        "question": "How to configure power distribution units (PDUs) into the cluster?",
+        "answer": "1. Use a text editor to create a file for the PDUs.  \n For example, create file pdu.config. \n If you have a cluster definition file that includes PDU information, copy the PDU information from the cluster definition file into the PDU-specific file, and proceed to the following step: \n Step 4 \n  2. Include the following information in this file: \n • Specify the network upon which the PDU resides. For example, head-bmc, which specifies the head BMC network. \n • You can specify a geographic location setting. To add a text string that points to the physical location of a PDU, use the geolocation= parameter. For example: \n ◦ hot aisle 3 rack1 A power   \n ◦ cold aisle 4 rack 1 B power  \n The text string can include spaces and special characters. If you include spaces, enclose the string in quotation marks (\").  \n If you have multiple PDUs, multiple clusters, or multiple racks, this setting can be helpful. The geolocation setting is optional. \n For example, create a file that includes information similar to the following: \n internal_name=pdu0, mgmt_bmc_net_name=head-bmc, \n geolocation=\"cold aisle 4 rack 1 B power\", \n mgmt_bmc_net_macs=99:99:99:99:99:99, \nhostname1=testpdu0 \n3. Save and close the file. \n4. Use the cm node add command to configure the PDUs into the cluster. \nThe format is as follows: \ncm node add -c cluster_definition_file_for_PDUs \nFor cluster_definition_file_for_PDUs, specify the name of your cluster definition file. \nFor example: \n# cm node add -c pdu.config"
+      },
+      {
+        "question": "What is the procedure for using the switchconfig command to determine the MAC address for a cooling component?",
+        "answer": "1. Log into the admin node as the root user.\n2. Obtain network information for the cluster or plan to visually inspect the components and cabling.\nProceed as follows:\n• If you have network information, such as the spreadsheet used for the cluster when it was manufactured at the factory, proceed to Step 3.\n• If you do not have network information, you need to visually inspect the cluster. Proceed to Step 4.\n 3. Examine the network information for the cluster.\n If the cluster was assembled at the factory, a network spreadsheet is available. If necessary, contact your HPE representative to obtain a copy. From the spreadsheet, determine the followin\n• The hostname of the switch into which the cooling component is plugge\n• The switch port for the cable that attaches the cooling component to the cluste\nProceed to Step \n4. Enter the following command to retrieve the hostnames for all the switches in the cluste\n# cm group system show mgmt_swit\nmgmts\nmgmts\nmgmtsw1\nmgmtsw1\nmgmtsw1\nmgmtsw1\nmgmtsw1\nmgmtsw1\nmgmts\nThis command shows you how many switches are in the cluster and the hostnames of the switches. You might find this information useful when completing the rest of the steps in this procedur\n5. Check the labels on the cables going into each switch. As you can see, the you can derive the hostname for each switch by examining the labels on the cable\n6. Find the cable that connects the switch and the cooling unit. Note the port number on the switch that the cable plugs int\n7. Enter the switchconfig command in the following forma\nswitchconfig info -s mgmtsw --f\nFor mgmtsw, specify the hostname of the management switch that the cooling component is plugged int\nFor exampl\n# switchconfig info -s mgmtsw1 --f\n8. Analyze the output from the switchconfig comman\nIn the switchconfig command output, find the line for the cooling component port in the switch."
+      },
+      {
+        "question": "What is the procedure for configuring an HPE Adaptive Rack Cooling System (ARCS) component?",
+        "answer": "1. Log in as the root user to the admin node.\n2. Obtain the MAC address of the ARCS component.\n If necessary, complete the procedure in the following topic, and return here when you have the MAC address:\n Using the switchconfig command to determine the MAC address for a cooling component\n 3. Enable the ARCS component.\n Use the cm cooldev arcs add command in one of the following formats to enable the ARCS component:\n • Format 1 - Adds the ARCS component to the cluster based on its MAC address:\n cm cooldev arcs add -m component_mac_addr -n hostname [-i ip_addr]\n Use this command format the first time an ARCS component is added to the cluster. This command requires you to provide the MAC address and a hostname.\n • Format 2 - Adds the ARCS component to the cluster using a previously assigned IP address:\n cm cooldev arcs add -n hostname -i ip_addr\nUse this format, if the IP address was statically configured, is reachable, and is active on the ARCS component.\nFor more information about the commands to add, delete, or display ARCS components, see the manpages for these commands or enter one or more of the following:\n# cm cooldev arcs -h\n# cm cooldev arcs add -h\n# cm cooldev arcs delete -h\n# cm cooldev arcs show -h\n4. Repeat the preceding steps for each additional ARCS component as needed."
+      },
+      {
+        "question": "Describe the purpose of the ‘cm repo add’ command in the cluster configuration procedure, including the required information.",
+        "answer": "The ‘cm repo add’ command is crucial for establishing a repository for the installation package during the cluster configuration process. This command requires specifying the full path to the installation ISO, whether it's stored on a USB device connected to the admin node or on the network."
+      },
+      {
+        "question": "Outline the steps involved in adding updates and patches for the operating system and cluster manager, including necessary commands and their parameters.",
+        "answer": "Adding updates and patches for the operating system and cluster manager involves several steps:\n\n1. Use the cm repo add command to add repositories for updates and patches. For custom repositories, include the --custom flag followed by the repository name.\n2. Optionally, select the added repositories using the cm repo select command.\n\nFor example:\n\nTo add a cluster manager patch (patch11627-x86_64), use:\n# cm repo add /opt/clmgr/repos/patch11627-x86_64 --custom patch11627-x86_64\n# cm repo select patch11627-x86_64\n\nTo add SLES 15 update repositories, use:\n# cm repo add /opt/clmgr/repos/SLES15-SPX-Updates-x86_64 --custom SLES15-SPX-Updates-x86_64\n# cm repo select SLES15-SPX-Updates-x86_64"
+      },
+      {
+        "question": "What role does the ‘configure-cluster’ command serve in the cluster setup procedure, and what parameter is essential for its execution?",
+        "answer": "The ‘configure-cluster’ command is pivotal in defining the cluster based on the specifications outlined in the cluster definition file. Its essential parameter is ‘--configfile’, where users must provide the complete path to the configuration file containing the cluster specifications."
+      },
+      {
+        "question": "How to add a repository for SLES 15 update repos according to the given procedure?",
+        "answer": "To add a repository for SLES 15 update repos, you would use the ‘cm repo add’ command with the path to the SLES 15 update repository # cm repo add /opt/clmgr/repos/SLES15-SPX-Updates-x86_64 --custom SLES15-SPX-Updates-x86_64, followed by the cm repo select command to select that repository (# cm repo select SLES15-SPX-Updates-x86_64)."
+      },
+      {
+        "question": "How to select the network interface card (NIC) for the cluster house network?",
+        "answer": "Use the space bar and arrow keys to select the desired NIC, then click OK."
+      },
+      {
+        "question": "Is it recommended to keep default settings during cluster configuration?",
+        "answer": "Yes, Hewlett Packard Enterprise recommends keeping default settings if possible."
+      },
+      {
+        "question": "What does the cluster manager installer create and configure as part of the procedure?",
+        "answer": "It creates and configures the bond0 network interface."
+      },
+      {
+        "question": "How to specify the bonding mode for the management network?",
+        "answer": "By selecting either active-backup or 802.3ad (LACP) during configuration."
+      },
+      {
+        "question": "What does the 'configure-cluster-ethernets' file contain?",
+        "answer": "It contains the interfaces specified during cluster configuration."
+      },
+      {
+        "question": "What tasks can be performed on the 'Initial Cluster Setup' screen?",
+        "answer": "Various tasks such as setting up software repositories, configuring network settings, and installing cluster software."
+      },
+      {
+        "question": "How to create software repositories for the cluster?",
+        "answer": "By inserting physical media or specifying a path to the required software."
+      },
+      {
+        "question": "How to configure data networks and InfiniBand networks?",
+        "answer": "By adding subnets and defining network information using the cluster configuration tool."
+      },
+      {
+        "question": "What is the purpose of configuring the cluster domain name?",
+        "answer": "To establish a unique domain for the cluster within the network environment."
+      },
+      {
+        "question": "How do I confirm the completion of initial cluster setup tasks?",
+        "answer": "You select 'OK' on the relevant screens."
+      },
+      {
+        "question": "Can I adjust network settings after the cluster has been deployed?",
+        "answer": "Yes, but some settings may be harder to change post-deployment."
+      },
+      {
+        "question": "How to start the cluster configuration tool?",
+        "answer": "Enter the command: # configure-cluster."
+      },
+      {
+        "question": "What action should to take if I want to use a separate NIC for BMC traffic on the Management Network?",
+        "answer": "Click Yes and select a NIC on the Management BMC Network Interfaces Selection screen."
+      },
+      {
+        "question": "Is it mandatory to configure separate NICs for BMC traffic on the Management Network?",
+        "answer": "No, it's optional."
+      },
+      {
+        "question": "What options are available for the admin bonding mode used for the management network?",
+        "answer": "Active-backup or 802.3ad (LACP)."
+      },
+      {
+        "question": "How can I verify the domain search path?",
+        "answer": "By selecting 'P Domain Search Path' in the Cluster Network Settings."
+      },
+      {
+        "question": "How do I configure UDPcast settings?",
+        "answer": "By selecting 'U Configure Udpcast Settings' on the Cluster Network Settings screen and choose the desired settings."
+      },
+      {
+        "question": "Can I adjust VLAN settings during cluster configuration?",
+        "answer": "Yes, Select 'X Configure Management Network Routing Settings' and follow the prompts to specify VLAN settings."
+      },
+      {
+        "question": "What actions are performed during initial admin node infrastructure setup?",
+        "answer": "Setting up the database and network settings."
+      },
+      {
+        "question": "How do I enable monitoring software during cluster setup?",
+        "answer": "By selecting the appropriate monitoring option on the Initial Cluster Setup Tasks screen."
+      },
+      {
+        "question": "What does the 'Initial Cluster Setup Complete' screen indicate?",
+        "answer": "It signifies the completion of initial setup tasks and returns you to the main menu."
+      },
+      {
+        "question": "How do I configure switch management network settings?",
+        "answer": "By selecting 'M Configure Switch Management Network' on the Initial Cluster Setup Tasks screen."
+      },
+      {
+        "question": "How do I set up predictable network names for future equipment?",
+        "answer": "By selecting 'P Predictable Network Names' and choosing Yes or No accordingly."
+      },
+      {
+        "question": "What happens if I select No for predictable network names?",
+        "answer": "Legacy names will be used for future equipment."
+      },
+      {
+        "question": "How do I exit the cluster configuration tool?",
+        "answer": "By selecting 'Quit' from the main menu."
+      },
+      {
+        "question": "Can you explain the process of selecting network interfaces during cluster configuration and the importance of each selection?",
+        "answer": "During cluster configuration, users select network interfaces for specific purposes such as house network, management network, and BMC traffic handling. These selections are crucial as they determine how the cluster communicates internally and with external networks."
+      },
+      {
+        "question": "How does the cluster configuration tool handle the creation of software repositories, and what considerations should be kept in mind during this process?",
+        "answer": "The tool prompts users to insert physical media or specify paths for software repositories. Considerations include ensuring accessibility of required software and verifying the integrity of the repository sources."
+      },
+      {
+        "question": "Could you elaborate on the steps involved in configuring data networks and InfiniBand networks within the cluster, and why this configuration is necessary?",
+        "answer": "Configuring data networks involves adding subnets and defining network parameters to facilitate data transfer within the cluster. InfiniBand network configuration is crucial for high-speed interconnectivity, especially in HPC environments."
+      },
+      {
+        "question": "What role does configuring the cluster domain name play in the overall setup, and how does it affect the cluster's functionality?",
+        "answer": "Configuring the cluster domain name establishes a unique identity within the network environment, enabling seamless communication and access control. It affects DNS resolution and helps in organizing network resources effectively."
+      },
+      {
+        "question": "Can you detail the options available for enabling monitoring software during the cluster setup, and explain the significance of each choice?",
+        "answer": "The options include native monitoring, Kafka/ELK/Alerta monitoring, and SIM monitoring. Each choice offers different monitoring capabilities, such as system health monitoring, log aggregation, and event alerting, ensuring robust cluster management."
+      },
+      {
+        "question": "What factors should be considered when deciding between predictable network names and legacy names for cluster components, and why is it important to maintain consistency in naming schemes?",
+        "answer": "Predictable network names offer easier management and scalability, while legacy names may be preferred for compatibility reasons. Consistency in naming schemes simplifies troubleshooting and enhances overall cluster stability."
+      },
+      {
+        "question": "How does adjusting VLAN settings impact the cluster's network configuration, and what considerations should be taken into account when making these adjustments?",
+        "answer": "Adjusting VLAN settings affects network segmentation and traffic routing within the cluster. Considerations include ensuring compatibility with existing network infrastructure and maintaining security and performance requirements."
+      },
+      {
+        "question": "Can you explain the significance of configuring the UDPcast settings and how it contributes to the cluster's operations?",
+        "answer": "Configuring UDPcast settings enables efficient multicast communication for tasks such as image deployment and cluster synchronization, optimizing cluster management tasks and reducing network congestion."
+      },
+      {
+        "question": "What steps are involved in setting up DNS resolvers and DNS forwarding within the cluster, and why are these configurations important for cluster functionality?",
+        "answer": "Setting up DNS resolvers ensures proper name resolution for cluster nodes and services, while DNS forwarding facilitates external domain resolution. These configurations are vital for seamless communication and accessibility of cluster resources."
+      },
+      {
+        "question": "How does the cluster configuration tool ensure the proper setup and initialization of the cluster's network infrastructure, and what checks are in place to verify the correctness of these configurations?",
+        "answer": "The tool guides users through various configuration steps and performs validation checks to ensure correct network setup. It verifies parameters such as IP addressing, subnetting, and DNS resolution to prevent configuration errors and ensure network reliability."
+      },
+      {
+        "question": "Where to find the interfaces specified during cluster configuration?",
+        "answer": "In the file /etc/opt/sgi/configure-cluster-ethernets."
+      },
+      {
+        "question": "What are the options available for setting up software repositories?",
+        "answer": "Embed ISOs or specify the path to the installation media."
+      },
+      {
+        "question": "How can I verify that the software repositories have been configured?",
+        "answer": "Wait for the completion message and press Enter to continue."
+      },
+      {
+        "question": "How do I register the media successfully with the cluster?",
+        "answer": "Enter the path to the media and click OK."
+      },
+      {
+        "question": "Can I configure multiple software repositories?",
+        "answer": "Yes, repeat the steps for each additional media path."
+      },
+      {
+        "question": "What should I install if I plan to configure MPT and run MPT programs?",
+        "answer": "Install the HPE Message Passing Interface (MPI) software."
+      },
+      {
+        "question": "What task is performed by selecting 'I Install and Configure Admin Cluster Software'?",
+        "answer": "Installing the cluster software written to the repositories."
+      },
+      {
+        "question": "How do I adjust the network settings after the initial setup?",
+        "answer": "Select 'N Network Settings' on the Initial Cluster Setup Tasks screen."
+      },
+      {
+        "question": "What action should I take when prompted to initialize the admin node network and database?",
+        "answer": "Select OK."
+      },
+      {
+        "question": "How can I list and adjust subnet addresses?",
+        "answer": "Select 'S List and Adjust Subnet Addresses' and click OK."
+      },
+      {
+        "question": "What should I do if I need to change network settings?",
+        "answer": "Highlight the setting to change, enter the new values, and press Enter."
+      },
+      {
+        "question": "How do I configure the cluster domain name?",
+        "answer": "Select 'D Configure Cluster Domain Name' and enter the domain name."
+      },
+      {
+        "question": "What is the significance of adjusting the domain_search_path?",
+        "answer": "It adjusts the domain name service (DNS) search order."
+      },
+      {
+        "question": "What is the purpose of entering the 'cattr list -g' command in the admin node software installation process?",
+        "answer": "The 'cattr list -g' command helps verify the features configured with the cluster configuration tool by displaying the output."
+      },
+      {
+        "question": "What to do if the ‘cattr’ output differs from cluster to cluster?",
+        "answer": "If the ‘cattr’ output varies based on configuration choices and hardware, you may need to respecify global values using the cluster configuration tool."
+      },
+      {
+        "question": "How to correct any aspect of the installation that is incorrect?",
+        "answer": "You can correct any incorrect aspect of the installation process. For example, if the default compute node image creation fails, you can manually create it according to specific naming conventions."
+      },
+      {
+        "question": "What to include in the default compute node image you create manually?",
+        "answer": "Ensure the default compute node image includes the cluster manager repository, the distribution repository, and optionally, additional repositories."
+      },
+      {
+        "question": "What format should the name of the default compute node image adhere to?",
+        "answer": "The default compute node image name should include the distribution name (such as 'rhel' or 'sles') and the operating system distribution release level (such as '8.X' or '15spX')."
+      },
+      {
+        "question": "What should be considered while naming the default compute node image?",
+        "answer": "When naming the default compute node image, ensure it adheres to the specific format, including the distribution name and the release level."
+      },
+      {
+        "question": "Where can you find detailed instructions on how to create an image?",
+        "answer": "You can find detailed instructions on how to create an image in the HPE Performance Cluster Manager Administration Guide."
+      },
+      {
+        "question": "How can you initiate the cluster configuration tool if corrections are needed?",
+        "answer": "To initiate the cluster configuration tool for making corrections, enter the command: '# configure-cluster'."
+      },
+      {
+        "question": "What is the complete procedure for completing the admin node software installation typically involves the following steps?",
+        "answer": "i. Verify Configuration Features: Enter the command ‘cattr list -g’ to view the output and verify the features configured with the cluster configuration tool.\nii. Correct Any Installation Errors: Review the output and correct any errors or discrepancies in the installation process. For instance, if the default compute node image creation fails, create it manually according to specific naming conventions.\niii. Create Default Compute Node Image (if necessary): If the default compute node image was not created automatically or if it's missing, manually create it. Ensure the image includes necessary repositories like the cluster manager repository, distribution repository, and any additional repositories.\niv. Name the Default Compute Node Image: Adhere to the naming conventions which include the distribution name (e.g., 'rhel' or 'sles') and the operating system distribution release level (e.g., '8.X' or '15spX').\nv. Refer to Documentation for Guidance: Consult relevant documentation, such as the HPE Performance Cluster Manager Administration Guide, for detailed instructions on creating and managing images.\nvi. Re-run Configuration Tool (if needed): If significant corrections or adjustments are required, consider re-running the cluster configuration tool (configure-cluster) to ensure proper settings.\nvii. Test and Validate Installation: Once all corrections are made, thoroughly test and validate the admin node software installation to ensure everything functions as expected."
+      },
+      {
+        "question": "What are the procedure for allocating IP addresses for physical quorum high availability (HA) admin nodes?",
+        "answer": "i. Obtain Necessary Values from hadb.conf: Access the /opt/clmgr/etc/hadb.conf file and obtain the following values: phys1_head_ip=, phys2_head_ip=, phys3_head_ip=, phys1_bmc_ip=, phys2_bmc_ip=, phys3_bmc_ip=.\nii. Determine Management Network Location: Determine whether the management controllers (e.g., iLO or BMC devices) for the physical admin nodes are on the house network or the management network.\niii. Create Cluster Definition File: Open a file in a text editor and create a small cluster definition file. Example: Create a file named phys-admins.config with the following content: [discover] internal_name=service100000, hostname1=phys-admin1-head, mgmt_net_name=head, mgmt_net_ip=phys1_head_ip_value, mgmt_net_macs=phys1_eth1_value, generic internal_name=service100001, hostname1=phys-admin2-head, mgmt_net_name=head, mgmt_net_ip=phys2_head_ip_value, mgmt_net_macs=phys2_eth1_value, generic internal_name=service100002, hostname1=phys-admin3-head, mgmt_net_name=head, mgmt_net_ip=phys3_head_ip_value, mgmt_net_macs=phys3_eth1_value, generic Note: Replace phys1_head_ip_value, phys2_head_ip_value, and phys3_head_ip_value with the actual IP values obtained from hadb.conf.\niv. Add Nodes using cm node add command: Use the cm node add command to add nodes from the cluster definition file created. Example: Execute the command: # cm node add -c phys-admins.config --skip-switch-config --skip-refresh-netboot"
+      },
+      {
+        "question": "What is the purpose of creating a cluster definition file?",
+        "answer": "The cluster definition file is created to specify details such as internal names, hostnames, management network names, IP addresses, and MAC addresses of the physical admin nodes."
+      },
+      {
+        "question": "How to create a cluster definition file?",
+        "answer": "You can create a cluster definition file using a text editor and structuring it according to the provided format, with relevant information such as internal names, hostnames, IP addresses, and MAC addresses."
+      },
+      {
+        "question": "What are the optional parameters that can be included while adding nodes using the cm node add command?",
+        "answer": "Optional parameters such as --skip-switch-config and --skip-refresh-netboot can be included to skip certain configuration steps during node addition."
+      },
+      {
+        "question": "How many physical admin nodes does this allocating IP addresses procedure apply to in a quorum HA configuration?",
+        "answer": "This procedure applies to clusters with 3 physical admin nodes for a quorum HA configuration."
+      },
+      {
+        "question": "How does this procedure contribute to the smooth operation of the cluster environment?",
+        "answer": "This procedure ensures that the physical quorum HA admin nodes are properly configured with allocated IP addresses, facilitating seamless communication and management within the cluster environment."
+      },
+      {
+        "question": "What are the procedure for allocating IP addresses for physical system admin controller high availability (SAC HA)  admin nodes?",
+        "answer": "i. Obtain Values from Configuration File: Access the sac-ha-initial-setup.conf file and obtain the necessary values such as phys1_head_ip, phys1_eth1, phys2_head_ip, and phys2_eth1.\nii. Create Cluster Definition File: Open a file in a text editor and create a cluster definition file (e.g., phys-admins.config). Define the nodes within the file including internal names, hostnames, management network names, IP addresses, and MAC addresses.\niii. Use cm node add Command: Execute the cm node add command with the cluster definition file to add the nodes to the cluster. Optionally, include parameters such as --skip-switch-config and --skip-refresh-netboot if certain configuration steps need to be skipped during node addition.\niv. Verify IP Allocation: Use a cat command to verify the allocated IP addresses in the /etc/hosts file."
+      },
+      {
+        "question": "What is the purpose of allocating IP addresses for physical system admin controller high availability (SAC HA) admin nodes?",
+        "answer": "This procedure allocates the IP addresses used by the physical admin nodes for the private network within the cluster, specifically for a SAC HA configuration."
+      },
+      {
+        "question": "How many physical admin nodes does this allocating IP addresses for physical system admin controller high availability apply to in a SAC HA configuration?",
+        "answer": "This procedure applies to clusters with two physical admin nodes for a SAC HA configuration."
+      },
+      {
+        "question": "What values need to be obtained from the sac-ha-initial-setup.conf file?",
+        "answer": "The values to be obtained from the sac-ha-initial-setup.conf file include:\n\nphys1_head_ip=\nphys1_eth1=\nphys2_head_ip=\nphys2_eth1="
+      },
+      {
+        "question": "How can you verify the values in the /etc/hosts file after adding nodes?",
+        "answer": "You can use the 'cat /etc/hosts | grep phys-admin' command to verify the values related to the physical admin nodes in the /etc/hosts file."
+      },
+      {
+        "question": "When should you complete the procedure for configuring an unsupported Ethernet switch into the cluster?",
+        "answer": "This procedure should be completed if the cluster includes any unsupported Ethernet switches."
+      },
+      {
+        "question": "What does the command ‘cadmin --enable-discover-skip-switchconfig’ do?",
+        "answer": "This command prevents the cluster manager from globally logging into management switches and allows manual configuration of unsupported switches later in the installation process."
+      },
+      {
+        "question": "How can you ensure efficient image distribution to compute nodes if the switch is unsupported?",
+        "answer": "You can either configure the unsupported switch for IGMP and IGMP Snooping to support multicast, or configure the cluster manager to use BitTorrent for unicast image distribution to compute nodes."
+      },
+      {
+        "question": "Why might you create entries for unsupported switches in the cluster definition file?",
+        "answer": "Creating entries for unsupported switches in the cluster definition file enables the admin node to assign an IP address to a DHCP request from the switch and match a static IP address to the switch's hostname."
+      },
+      {
+        "question": "What are the considerations after completing the cluster manager installation regarding DHCP or static IP assignment for the unsupported switch?",
+        "answer": "After completing the cluster manager installation, you should consider enabling DHCP or configuring a static IP address on the unsupported switch for remote management. This involves enabling Telnet or SSH and creating a remote username with a strong password."
+      },
+      {
+        "question": "What are the procedures to configure an unsupported Ethernet switch into the cluster?",
+        "answer": "i. Prevent Automatic Switch Configuration: Execute ‘cadmin --enable-discover-skip-switchconfig’ to prevent the cluster manager from globally logging into management switches.\nii. Configure Switch for Multicast or Unicast: Verify and configure IGMP and IGMP Snooping on the unsupported switch for multicast, or configure the cluster manager to use BitTorrent for unicast image distribution.\niii. Optional: Create Entries in Cluster Definition File: Optionally, create entries for unsupported switches in the cluster definition file to assign IP addresses and match static IPs to switch hostnames.\niv. Post-Installation Considerations: After cluster manager installation, consider enabling DHCP or configuring a static IP on the unsupported switch for remote management via Telnet or SSH."
+      },
+      {
+        "question": "When should you complete the procedure for renaming the HPE Slingshot interconnect hostname?",
+        "answer": "This procedure should be completed if the cluster nodes use Mellanox network interface cards (NICs), typically found on HPE Slingshot 10 systems."
+      },
+      {
+        "question": "What is the purpose of the post-install script located in /opt/clmgr/image/scripts/post-install/50all.create_hsn_udev?",
+        "answer": "The post-install script generates userspace device manager rules, specifically for HPE Slingshot interconnect devices."
+      },
+      {
+        "question": "Where are the rules generated by the post-install script located?",
+        "answer": "The rules generated by the post-install script are located in the file /usr/lib/udev/rules.d/94-cm-slingshot.rules."
+      },
+      {
+        "question": "What modification needs to be made to the post-install script to search for Mellanox NICs?",
+        "answer": "In the post-install script, the value of DEV_TYPE needs to be replaced with 'mellanox' to search for Mellanox NICs."
+      },
+      {
+        "question": "Why might you need to synchronize the script to shared storage after making modifications?",
+        "answer": "Synchronizing the script to shared storage is necessary if the cluster has scalable unit (SU) leader nodes, ensuring consistency across all nodes in the cluster."
+      },
+      {
+        "question": "How to rename the HPE Slingshot interconnect hostname to have an hsn prefix",
+        "answer": "1. Log into Admin Node and Open Script: Log into the admin node as the root user and open the post-install script located at /opt/clmgr/image/scripts/post-install/50all.create_hsn_udev.\n2. Modify Post-Install Script: Search for DEV_TYPE in the script and replace the current value with 'mellanox'.\n3. Save and Close Script: Save the changes made to the script and close the text editor.\n4. Synchronize Script to Shared Storage (Conditional): If the cluster has scalable unit (SU) leader nodes, synchronize the script to shared storage using the command 'cm image sync --scripts'. By following this procedure, the HPE Slingshot interconnect hostname can be renamed with an 'hsn' prefix, ensuring compatibility with Mellanox NICs used on the cluster nodes."
+      },
+      {
+        "question": "When might you consider configuring software RAID on cluster nodes?",
+        "answer": "Software RAID configuration on cluster nodes is typically considered for ensuring data redundancy and improving fault tolerance for system disks, such as leader nodes and compute nodes."
+      },
+      {
+        "question": "What RAID levels are supported by the cluster manager?",
+        "answer": "The cluster manager supports RAID levels 0, 1, 4, 5, 6, and 10 for configuring software RAID on cluster nodes."
+      },
+      {
+        "question": "What metadata types are available for configuring software RAID with the cluster manager?",
+        "answer": "The available metadata types for software RAID configuration include BIOS-assisted software RAID metadata and native metadata."
+      },
+      {
+        "question": "What are the limitations if you want to configure nodes to boot from disk without network or miniroot help?",
+        "answer": "If nodes need to boot from disk without network or miniroot assistance, the options are limited to BIOS-assisted software RAID at any RAID level or MD metadata with RAID 1 only."
+      },
+      {
+        "question": "What parameters should be added to the cluster definition file to configure BIOS-assisted RAID (BAR) on leader or compute nodes?",
+        "answer": "To configure BAR on leader or compute nodes, add the following parameters to the cluster definition file: md_metadata=imsm, md_raidlevel=n (specify the desired RAID level), (Optional) force_disk='device1,device2,...,deviceN' to specify disk devices required for the RAID level chosen."
+      },
+      {
+        "question": "What is the procedure for configuring BIOS-assisted RAID (BAR) on the root partition of a leader node or a compute node?",
+        "answer": "1. Log into Admin Node and Determine Nodes for RAID Configuration: Log into the admin node as the root user and determine which leader nodes and compute nodes require software RAID configuration.\n2. Configure BIOS for Software RAID: Configure the BIOS on leader nodes or compute nodes for software RAID by changing the mode from AHCI to RAID.\n3. Modify Cluster Definition File: Add parameters such as md_metadata=imsm, md_raidlevel=n, and (Optional) force_disk='device1,device2,...,deviceN' to the cluster definition file.\n4. Verify RAID Volume: Verify the new RAID volume, ensuring it is set as the new boot device, by accessing the BIOS boot menu during a reboot. By following this procedure, software RAID can be configured on cluster nodes using the cluster manager, enhancing data redundancy and fault tolerance within the cluster environment."
+      },
+      {
+        "question": "When is it advisable to configure software MD RAID 1 on the root partition of a leader node or a compute node?",
+        "answer": "It is advisable to configure software MD RAID 1 on the root partition of a leader node or a compute node when you want to enable booting from disk while ensuring redundancy and fault tolerance."
+      },
+      {
+        "question": "What are the mandatory parameters that need to be added to the cluster definition file for configuring software MD RAID 1?",
+        "answer": "The mandatory parameters to add to the cluster definition file are:\nmd_metadata=md\nmd_raidlevel=1"
+      },
+      {
+        "question": "What is the purpose of the (Optional) force_disk parameter in the cluster definition file?",
+        "answer": "The force_disk parameter allows you to specify the disk devices required for the RAID level chosen. By default, the cluster manager configures RAID 1 on the first two empty disks."
+      },
+      {
+        "question": "Why is it recommended to use /dev/disk/by-id or /dev/disk/by-path names instead of disk identifiers like /dev/sda when specifying disks for force_disk?",
+        "answer": "It is recommended to use /dev/disk/by-id or /dev/disk/by-path names to ensure that the cluster manager operates on the exact disks targeted and to avoid reliance on device names that might not point where expected."
+      },
+      {
+        "question": "What are the steps to configure software MD RAID 1 on the root partition of a leader node or a compute node?",
+        "answer": "1. Log into Admin Node and Determine Nodes for RAID Configuration: Log into the admin node as the root user and determine which leader nodes and compute nodes require software MD RAID 1 configuration.\n2. Modify Cluster Definition File: Add parameters such as md_metadata=md, md_raidlevel=1, and (Optional) force_disk='device1,device2,...,deviceN' to the cluster definition file.\n3. Verify RAID Configuration: Ensure that the RAID configuration is correctly set up by checking the disk devices specified in the cluster definition file."
+      },
+      {
+        "question": "When to consider configuring software MD RAID on leader nodes and compute nodes in a cluster?",
+        "answer": "Configuring software MD RAID on leader nodes and compute nodes is considered when you need to enhance data redundancy and fault tolerance across the cluster."
+      },
+      {
+        "question": "What command is used to initiate the configuration of software RAID on leader nodes and compute nodes?",
+        "answer": "The command used is cm node provision."
+      },
+      {
+        "question": "What primary specifications need to be provided when using the cm node provision command?",
+        "answer": "When using the cm node provision command, the following primary specifications need to be provided:\n\n‘-n nodes’: Specifies the nodes to be provisioned.\n‘--md-metadata value’: Specifies the metadata type for the RAID configuration.\n‘--md-raidlevel integer’: Specifies the RAID level for the RAID configuration.\n‘--wipe-disk’: Indicates whether to wipe existing data on disks before configuring RAID.\n‘--force-disk devices’: Specifies the disk devices to be used for the RAID configuration."
+      },
+      {
+        "question": "What is the purpose of the --wipe-disk option in the cm node provision command?",
+        "answer": "The --wipe-disk option indicates whether to wipe existing data on disks before configuring RAID, ensuring a clean slate for the RAID configuration."
+      },
+      {
+        "question": "What are the steps to configure software MD RAID on leader nodes and on compute nodes?",
+        "answer": "1. Log into Admin Node: Log into the admin node as the root user.\n2. Use cm node provision Command: Use the cm node provision command with the appropriate options and arguments to initiate the configuration of software RAID on leader nodes and compute nodes."
+      },
+      {
+        "question": "What is the purpose of verifying and splitting the cluster definition file?",
+        "answer": "Verifying and splitting the cluster definition file ensures that it is correctly formatted and contains all the necessary information for the cluster nodes. Splitting the file helps organize the configuration into separate files for different components, making it more manageable."
+      },
+      {
+        "question": "How can you retrieve a copy of the cluster definition file?",
+        "answer": "You can retrieve a copy of the cluster definition file by using the cm system show configfile --all > filename command, where filename is the desired name for the file. This command generates a cluster definition file containing all cluster components."
+      },
+      {
+        "question": "What steps are involved in splitting the cluster definition file into additional files?",
+        "answer": "To split the cluster definition file into multiple files, you can follow these steps:\na. Copy the original file using the cp command.\nb. Name the copied files according to the components they describe.\nc. Open the copied files and retain only the lines relevant to the specific component.\nd. Review the split files carefully before proceeding."
+      },
+      {
+        "question": "What information should be included in a cluster definition file for management switches only?",
+        "answer": "For management switches only, the cluster definition file should include lines specifying internal names, management network details, switch type, IP addresses, hostnames, and other relevant attributes for each switch."
+      },
+      {
+        "question": "How can you manually add information for switches not defined in the cluster definition file?",
+        "answer": "To add information for switches not defined in the cluster definition file, you can manually include details such as MAC addresses, IP addresses, hostnames, and partner switch information. Additionally, if the switch does not support DHCP, you may need to configure a static IP address matching the mgmt_net_ip attribute in the configuration file."
+      },
+      {
+        "question": "Why does Hewlett Packard Enterprise recommend using a cluster definition file when configuring and bringing up the  cluster system?",
+        "answer": "Hewlett Packard Enterprise recommends using a cluster definition file because it centralizes all cluster configuration data into easily maintainable and editable files. This approach reduces uncertainty during cluster configuration and ensures consistency across the system."
+      },
+      {
+        "question": "How can node discovery commands utilize a cluster definition file?",
+        "answer": "Node discovery commands such as ‘cm node add’, ‘cm node discover add’, and sometimes ‘configure-cluster’ can accept a cluster definition file as input. This allows for streamlined configuration of nodes and components within the cluster."
+      },
+      {
+        "question": "What information is typically included for each component in a cluster definition file?",
+        "answer": "Each component in a cluster definition file is defined with various configuration attributes, which may include MAC addresses, IP addresses, component roles, hostnames, management network details, node image assignments, and more."
+      },
+      {
+        "question": "How can you obtain the original cluster definition file if you no longer have it?",
+        "answer": "If the original cluster definition file is no longer available, you can obtain it from the HPE factory. Alternatively, you can generate a cluster definition file by using the command ‘cm system show configfile --all’ and then build a file from the resulting output."
+      },
+      {
+        "question": "How are nodes typically configured with hostnames by default in HPE clusters?",
+        "answer": "By default, HPE configures nodes with hostnames corresponding to their default numbers. For example, graphical compute nodes are numbered starting with 1, so they may have hostnames such as ‘r01g01’."
+      },
+      {
+        "question": "What is the purpose of using a cluster definition file with node templates and NIC templates?",
+        "answer": "The purpose of using a cluster definition file with node templates and NIC templates is to streamline the configuration process for clusters, especially when dealing with multiple nodes with similar characteristics. These templates allow you to define characteristics for specific node types and network interfaces once, avoiding repetitive configurations for each individual node."
+      },
+      {
+        "question": "How are node templates typically defined in a cluster definition file?",
+        "answer": "Node templates are defined in sections marked by ‘[templates]’ keyword at the start of the section. Within these sections, characteristics for specific node types such as kernel names, image names, node controller authentication info, and others are described."
+      },
+      {
+        "question": "What information do NIC templates contain in a cluster definition file?",
+        "answer": "NIC templates contain information about network interface cards (NICs) in specific nodes. Each node template can have one or more NIC templates, which explain how to configure networks to interfaces. NIC template definitions may include details about network interfaces, network names, bonding settings, and more."
+      },
+      {
+        "question": "What are predictable names in the context of NICs within each node?",
+        "answer": "Predictable names refer to the NICs within each node having consistent names across similar hardware configurations. For example, if you have multiple nodes of the same type, their NICs will have identical names, making network management easier."
+      },
+      {
+        "question": "Where does the cluster manager typically read templates from when running the cluster configuration tool?",
+        "answer": "By default, the cluster manager reads templates from the file ‘/etc/opt/sgi/default-node-templates.conf’ when running the cluster configuration tool. This file contains predefined templates that can be utilized during cluster setup."
+      },
+      {
+        "question": "What is the purpose of configuring HPE Moonshot system cartridges into a cluster?",
+        "answer": "Configuring HPE Moonshot system cartridges into a cluster allows for the utilization of these cartridges as compute nodes within the cluster infrastructure. This integration enhances computational capabilities and facilitates cluster management."
+      },
+      {
+        "question": "How can you obtain the IP address of the HPE Moonshot chassis?",
+        "answer": "The IP address of the HPE Moonshot chassis can be obtained either by connecting to the chassis console and determining the iLOCM IP address if it's configured statically, or by monitoring the DHCPDISCOVER lines in the ‘/var/log/messages’ file if DHCP is used."
+      },
+      {
+        "question": "How can you generate node definitions for HPE Moonshot system cartridges using the ‘cm_scan_moonshot’ command?",
+        "answer": "You can use the ‘cm_scan_moonshot’ command with appropriate parameters to generate node definitions. For example, specifying the chassis IP address, additional configuration attributes, node naming syntax, and output file location."
+      },
+      {
+        "question": "What are some examples of using the ‘cm_scan_moonshot’ command to generate node definitions?",
+        "answer": "Two examples are provided:\n1. Generating node definitions for 10 cartridges in a single chassis with specific configuration attributes such as ‘tpm_boot’, ‘ predictable_net_names’, ‘force_disk’, and ‘destroy_disk_label’.\n2. Generating node definitions for cartridges across two chassis with the ‘predictable_net_names’ attribute."
+      },
+      {
+        "question": "How do you integrate the generated node definitions into the cluster definition file?",
+        "answer": "After generating node definitions, open both the output file and the cluster definition file in a text editor. Then, locate the ‘[discover]’ section in the cluster definition file and append the lines from the output file to this section."
+      },
+      {
+        "question": "What steps are involved in configuring the cartridges into the cluster after updating the cluster definition file?",
+        "answer": "After updating the cluster definition file, the cartridges can be configured into the cluster by using the ‘cm node add’ command with the edited cluster definition file. Additionally, the chassis should be scanned using ‘cm_scan_moonshot’ to update the cluster database with cartridge and node location information."
+      },
+      {
+        "question": "What commands are used to complete the configuration process and ensure proper cluster operation?",
+        "answer": "The following commands are used:\n\n‘cm node update config --sync -n '*' ‘  to update the cluster configuration and synchronize it.\n‘cm node refresh netboot -n '*' ‘ to refresh netboot configurations for all nodes.\n‘cm node provision’ command to provision each node with an image, ensuring they are ready for operation."
+      },
+      {
+        "question": "What is the next step after completing the configuration of HPE Moonshot system cartridges into the cluster?",
+        "answer": "After configuring the cartridges into the cluster and ensuring proper operation, the next step would typically involve backing up the cluster to safeguard against data loss and ensure disaster recovery preparedness."
+      },
+      {
+        "question": " What is the procedure to install the operating system and the cluster manager simultaneously on the admin node?",
+        "answer":  "1. Preparing to install the operating system and the cluster manager simultaneously on the admin node \n 2. (Conditional) Preparing a USB device\n3. (Optional) Configuring custom partitions on the admin node\n4. Inserting the installation USB device and booting the admin node\n5. Installing an operating system. Use one of the following procedures:\n• Configuring RHEL 8 on the admin node\n• Configuring SLES 15 on the admin node\n6. (Conditional) Configuring the storage unit\n7. (Conditional) Enabling an input-output memory management unit (IOMMU)\n8. Verifying the configuration"
+        
+        },
+        {
+        "question": "What is the purpose of the admin installer .iso file?",
+        "answer": "The admin installer .iso file is a bootable image designed to install both the operating system and the cluster manager simultaneously."
+        },
+        {
+        "question": "What is the recommended approach by Hewlett Packard Enterprise for installing the operating system and cluster manager?",
+        "answer": "Hewlett Packard Enterprise recommends using the admin installer .iso file for installing the operating system and cluster manager simultaneously."
+        },
+        {
+          "question": "What is the alternative method for installing the operating system and cluster manager?",
+          "answer": 
+              "You should consider using the admin installer .iso file if either of the following conditions is true:\n- You received new hardware from HPE, but no software is installed on the cluster.\n- You want to configure custom partitions on the admin node and want the installer to configure the operating system and cluster manager together using standard installation parameters defined in the cluster manager software.\n- You want the option to configure a high availability (HA) admin node.\n- You want to configure two or more slots. \n- A disaster occurred at your site, and you need to recover your cluster"
+          
+        },
+        {
+          "question": "What information do you need to obtain from the site network administrator for the admin node?",
+          "answer": "You need to obtain various network configuration details such as the IP address, netmask, default gateway, hostname, domain name, DNS server IP addresses, root password, and NTP server IP addresses."
+        },
+        {
+          "question": "How can you obtain the operating system software?",
+          "answer": "You can obtain the operating system software directly from your operating system software vendor. After obtaining it, you can write the .iso file to a USB device or a network location for installation."
+        },
+        {
+          "question": "Where can you obtain the cluster manager software?",
+          "answer": "The cluster manager software can be obtained from HPE's customer portal. You can download it, along with any patches or updates, from the provided website after logging in with your HPE Passport account. Alternatively, you can obtain a media kit from HPE, which includes installation DVDs."
+        },
+      
+        {
+          "question": "What hardware and software configuration is required for a SAC HA admin node?",
+          "answer": "For a SAC HA admin node, an HPE MSA 2050 storage unit and associated software are required. The storage unit should be configured with one LUN per slot."
+        },
+        {
+          "question": "How do you attach the cluster to the site network?",
+          "answer": "You can follow the procedure outlined in the HPE Performance Cluster Manager Getting Started Guide."
+        },
+        {
+          "question": "What steps are involved in gathering information about the cluster components?",
+          "answer": "Ideally, you should obtain the cluster definition file for the cluster, which contains system data such as MAC addresses for the nodes. If not available, you can plan to use the cm node discover command to configure nodes into the cluster."
+        },
+      
+        {
+          "question": "What RAID configurations are supported for the admin node?",
+          "answer": "The cluster manager supports Linux RAID admin node, MD RAID 1 admin node, and BIOS software RAID configurations."
+        },
+        {
+          "question": "How can one configure a software RAID on the admin node?",
+          "answer": "To configure a software RAID on the admin node, you can refer to the README file for the cluster manager admin node installation software. Additionally, you can follow the instructions provided for configuring software RAID on cluster nodes, if needed."
+        },
+      
+        {
+          "question": "How can I prepare a USB device for installing the cluster manager software if I downloaded the software to a network location?",
+          "answer": "Plug a USB device into the server where the software is downloaded, ensuring it has a capacity of 16 GB or more. Then, follow either Method 1 (for Linux) or Method 2 (for Windows) to write the cluster manager software to the USB device."
+        },
+        {
+          "question": "What is the procedure for writing the cluster manager software from a Linux server to the USB device?",
+          "answer": "- Plug the USB device into the Linux server to which you downloaded the ISO. Make sure that the USB stick has a capacity of 16 GB or more.\n- In a terminal window, use the following command to retrieve the device name: # dmesg | tail [-20]\nSpecify -20 on the command if you want the full identity on the USB.\n- Enter the following commands to find the /dev/sdX of the USB device:\n# dd if=/dev/zero of=/dev/sdX bs=512 count=65536\n# dd if=cm-admin-install-1.8-os.iso of=/dev/sdX bs=1024\n- Extract the USB device and plug it in again.\n- Enter the parted command as shown in the following example, and at the parted prompt, enter p to print the partition map:\n# parted /dev/sdX"
+        },
+        {
+          "question": "How do I fix errors if they occur during the process of writing the cluster manager software from a Linux server to the USB device?",
+          "answer": "- Enter F to fix the error if there is an error notification.\nIf the following message appears, enter F to fix:\nWarning: Not all of the space available to /dev/sdd appears to be used, you can fix the\nGPT to use all of the space (an extra 17098052 blocks) or continue with the current setting? Fix/Ignore? F."
+        },
+        {
+          "question": "What is the procedure for writing the cluster manager software from a Windows server to the USB device?",
+          "answer": "a. Plug the USB device into the Windows system to which you downloaded the ISO.\nb. Start Win32DiskImager.\nc. Click the file folder icon.\nd. In the Select a disk image popup, browse to the .iso file, select the .iso file, and click Open.\ne. In the Image File field, verify the path to the location of the .iso file.\nf. In the Device field, verify the destination device.\ng. ClickWrite.\nh. When the Complete popup appears, click OK."
+        },
+        {
+          "question": "How can I create custom partitions on the admin node if the default partitioning scheme doesn't meet my requirements?",
+          "answer": "You can follow a procedure to specify custom partitions for the admin node. This allows you to choose your own layout for the system disk."
+        },
+        {
+          "question": "What should I keep in mind regarding custom partitions on compute nodes if I use custom partitions on the admin node?",
+          "answer": "Custom partitions on the admin node reduce it to one slot. However, using custom partitions on compute nodes doesn't affect the admin node's configuration. You can create different custom partitions on each compute node."
+        },
+        {
+          "question": "Where can I find information about the custom partitioning feature and its implications?",
+          "answer": "Information about custom partitions and their effects on cluster operations can be found in the README.install file and the custom_partitions_example.cfg file, both located in the root directory of the installation USB."
+        },
+        {
+          "question": "How can I specify the partitions I want for the admin node?",
+          "answer": "You can open the custom_partitions_example.cfg file in a text editor and specify the partitions you want for the admin node. Typically, you write the configuration file to an NFS server at your site. Use an existing server. A later procedure explains how to specify the location to the installer at boot time. Alternatively, you can write the configuration file to the installation media, but this requires assistance from Hewlett Packard Enterprise."
+        },
+        {
+          "question": "What file system specifications are supported by the cluster manager for custom partitions?",
+          "answer": "The cluster manager supports XFS, ext4, and ext3 file systems for custom partitions on the admin node."
+        },
+        {
+          "question": "What is the purpose of repeating the procedure on additional admin nodes?",
+          "answer": "The procedure should be repeated on additional admin nodes if you plan to configure them into a high availability (HA) admin node configuration."
+        },
+        {
+          "question": "How do I boot the admin node from a bootable USB device or network location?",
+          "answer": "1. Ensure that the admin node is configured to boot from a bootable USB device or from a network location.\n2. Power on the admin node.\n3. (Conditional) Insert the USB device you created into the USB port on the admin node.\nComplete this step if you wrote the software to a USB device.\n4. Use the arrow keys to select Display Instructions, and read the instructions carefully.\n5. Use the arrow keys to select one of the boot options, press Enter, and monitor the installation."
+        },
+        {
+          "question": "What boot options are available during the installation process?",
+          "answer": "The available boot options are: Display Instructions, Install: Install to Designated Slot, Install: Wipe Out and Start Over: Prompted, Rescue: Prompted, and Install: Custom, type 'e' to edit kernel parameters."
+        },
+        {
+          "question": "When should I select the 'Install: Install to Designated Slot' option?",
+          "answer": "Select this option if you have an open slot on your cluster and you want to recreate an operating system in that open slot. This option affects only the open slot, leaving all other slots configured as they are."
+        },
+        {
+          "question": "How can I customize the installation process?",
+          "answer": "Select the 'Install: Custom, type 'e' to edit kernel parameters' option. This allows you to supply all boot options as command-line parameters, giving you more control over the installation process. However, this option is recommended only for users with installation experience."
+        },
+        {
+          "question": "Can you provide an example of custom boot parameters?",
+          "answer": "To allocate scratch disk space on the system disk of the admin node, you can add parameters like destroy_disk_label=yes and root_disk_reserve=size to the kernel parameter list. This allows you to create scratch disk space in partition 61, with the size specified in GiB."
+        },
+        {
+          "question": "What does the 'Install: Wipe Out and Start Over: Prompted' option do?",
+          "answer": "This option destroys all information currently on the cluster, partitions the admin node with the specified number of slots, and writes the initial installation to the designated slot. It's suitable for initial installations."
+        },
+        {
+          "question": "How can I configure a node as part of an HA admin node configuration during installation?",
+          "answer": "To configure this node as part of an HA admin node configuration, enter y and press Enter. If this node is a standalone, non-HA admin node, enter n and press Enter."
+        },
+        {
+          "question": "What option allows me to configure MD RAID 1 for the root during installation?",
+          "answer": "By default, the cluster manager does not create an MD RAID 1 boot disk for the admin node. To create a Linux software MD RAID 1 boot disk for the admin node, enter y. The admin node can boot from this RAID."
+        },
+        {
+          "question": "How do I specify disk devices for the root during installation?",
+          "answer": "When prompted, supply devices(s) for root as a comma-separated list of disk devices."
+        },
+        {
+          "question": "What is the purpose of the 'Use predictable network names for the admin node?' prompt during installation?",
+          "answer": "This prompt determines whether predictable names or legacy names are assigned to the network interface cards (NICs) in the node. Enter 'y' to use predictable names or 'n' for legacy names."
+        },  {
+          "question": "How can I start the network and SSH service during installation for troubleshooting purposes?",
+          "answer": "When prompted, enter 'y' for 'Start the network (DHCP) and sshd on port 40?'."
+        },
+        {
+          "question": "What caution is provided regarding the disk analysis for selecting the shared disk?",
+          "answer": "The caution advises against assuming the same results in your environment as in the example environment. Correct disk analysis in your environment may not produce the same effect."
+        },
+        {
+          "question": "How can I erase existing data on the shared disk?",
+          "answer": "By using the commands :\n# parted /dev/sdX mklabel gpt\n# dd if=/dev/zero of=/dev/sdX bs=512 count=16384"
+        },
+        {
+          "question": "When can I perform an input-output memory management unit (IOMMU)?",
+          "answer": "Complete this procedure if the following are both true:\n• You want to configure a system admin controller high availability (SAC HA) admin node.\n• The physical admin nodes are Intel platform admin nodes such as HPE Proliant DL360 servers."
+        },
+        {
+          "question": "What is the procedure to enable an input-output memory management unit (IOMMU)?",
+          "answer": "1. Log into each of the physical admin nodes as the root user.\n2. On each physical admin node, open the following file in a text editor:\n   /etc/default/grub\n3. Search for the following string in the file: GRUB_CMDLINE_LINUX_DEFAULT\n4. Add intel_iommu=on to the end of the GRUB_CMDLINE_LINUX_DEFAULT line.\n5. On each physical admin node, save and close the edited file.\n6. On each physical admin node, enter one of the following commands:\n   On RHEL systems, enter the following:\n   # grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg\n   On SLES systems, enter the following:\n   # grub2-mkconfig -o /boot/grub2/grub.cfg"
+        },  
+        {
+          "question": "How can I verify the time zone on each physical admin node?",
+          "answer": "Use the command date to verify the time zone.\n# date"
+        },
+        {
+          "question": "Give Procedure for verifying the configuration?",
+          "answer": "1. Log into each physical admin node as the root user.\n   Complete the steps in this procedure on all physical admin nodes.\n2. Enter the following command to verify the time zone: # date\n3. Enter the following command to verify the hostname and the IP address: # cat /etc/hosts\n4. Enter the following command to verify the time: # chronyc sources -v\n5. Enter the following command to verify the network configuration: # ip addr\n6. Use the hostnamectl command to verify that the static host is set.\n   For example, in the following output, the first line is Static hostname: name. Make sure that the hostname you specified for the physical admin node is the one that appears in the name field. The output shows the hostname set correctly on physical node hikari.\n7. (Conditional) Verify that IOMMU is enabled.\n8. (Conditional) Verify that the physical admin nodes can communicate with each other. Complete this step on physical admin nodes configured for high availability (HA)."
+        },
+        {
+          "question": "How can I verify communication between physical admin nodes in a high availability configuration?",
+          "answer": "For SAC HA nodes, ping from one node to the other. For quorum HA nodes, ping between all nodes to ensure communication."
+        },
+        {
+          "question": "What is a slot in the context of configuring a cluster?",
+          "answer": "A slot consists of all the partitions related to a Linux installation within the cluster."
+        },
+        {
+          "question": "How many slots can you configure the cluster to boot from?",
+          "answer": "You can configure the cluster to boot from up to 10 slots."
+        },
+        {
+          "question": "What is the default number of slots on a factory-configured cluster?",
+          "answer": "On a factory-configured cluster, the default number of slots is one."
+        },
+        {
+          "question": "What advantage does having multiple slots provide?",
+          "answer": "Multiple slots, especially on the admin node, can lead to a smoother update process when upgrading the cluster manager or operating system software."
+        },
+        {
+          "question": "What does a multiple-slot disk layout include on each node?",
+          "answer": "• A /boot partition.\n• A /, or root, partition.\n• A /boot/efi partition. A slot includes this partition only if the node is an EFI node."
+        },
+        {
+          "question": "What is the purpose of configuring a quorum high availability (quorum HA) admin node?",
+          "answer": "The quorum HA solution eliminates the need for shared storage systems by utilizing the Gluster file system in sharding mode to host a virtual machine image. It ensures high availability by allowing the admin node to reside in a virtual machine that can move between physical nodes during failover."
+        },
+        {
+          "question": "How is the network configuration set up during the quorum HA admin node configuration?",
+          "answer": "The installer creates network bridges (br0 and br1) and a bond (bond0) for the management network. It also creates a virtual machine disk and configuration file for the virtual admin node."
+        },
+        {
+          "question": "What commands can be used to display the status of the virtual admin node?",
+          "answer": "Depending on the cluster type, the following commands can be used:\nOn a RHEL cluster: # pcs resource status virt\nOn a SLES cluster: # crm resource status adminvm"
+        }, {
+          "question": "What are the prerequisites for configuring physical servers into a quorum HA admin node?",
+          "answer": "The servers should be identical, equipped with x86_64 architecture, have dedicated NICs for house, cluster management, and possibly BMC network, and have storage devices for the operating system and Gluster storage."
+        },
+        {
+          "question": "Why is it necessary to dismantle NIC bonding before configuring a quorum HA admin node?",
+          "answer": "The configuration scripts may fail if NICs in the physical admin nodes are bonded. Dismantling bonding ensures the success of the quorum HA configuration."
+        },
+        {
+          "question": "How can the IP connectivity between servers be verified during the setup process?",
+          "answer": "Each server should have an IP address on the house network, and they should be able to reach each other using an SSH connection. Passwordless SSH configuration is not required for this verification."
+        },
+        {
+          "question": "What is the purpose of populating the hadb.conf file in the context of configuring a quorum high availability (quorum HA) admin node?",
+          "answer": "The purpose of populating the hadb.conf file is to provide necessary configuration information for setting up the quorum HA admin node, ensuring that all required fields are filled with valid values."
+        },
+        {
+          "question": "What are the recommended methods for populating the hadb.conf file, and what are the steps involved in each method?",
+          "answer": "The recommended methods are:\nMethod 1: Populating the file during an interactive session with the installer:\nOpen the hadb.conf file in a text editor, delete any defaults or prepopulated values, save and close the file.\nRun the /opt/clmgr/lib/q-ha/setup command and respond to each prompt.\nMethod 2: Editing the configuration file directly:\nOpen the hadb.conf file in a text editor, replace any default values with appropriate ones, and save the file."
+        },
+        {
+          "question": "Why does Hewlett Packard Enterprise recommend using the interactive mode for inexperienced users during the hadb.conf file population?",
+          "answer": "HPE recommends interactive mode for inexperienced users to ensure that they can respond to prompts and provide necessary information correctly without errors."
+        },
+        {
+          "question": "What specific information needs to be provided in the hadb.conf file, and what are the consequences of not populating each field with valid values?",
+          "answer": "The hadb.conf file needs to be populated with admin node information, ensuring that all required fields are filled. Failure to populate each field with valid values can lead to misconfiguration and potential issues during the setup process."
+        },
+        {
+          "question": "What command is used to validate the quorum HA configuration information and create the HA admin node after populating the hadb.conf file?",
+          "answer": "The command used is /opt/clmgr/lib/q-ha/setup, which validates the configuration information and creates the HA admin node based on the provided settings."
+        },
+        {
+          "question": "After creating the HA admin node, what command is used to log into the third physical admin node and access the virtual machine console?",
+          "answer": "The command used is virsh console adminvm, which allows logging into the third physical admin node and accessing the virtual machine console."
+        }, {
+          "question": "What options are available for installing an operating system on the virtual machine, and how do they differ?",
+          "answer": "The available options include configuring RHEL 8 or SLES 15 on the admin node, each with its own set of installation procedures tailored to the specific operating system."
+        },
+        {
+          "question": "In the optional step, what command is used to monitor the configuration on physical admin node 2 and ensure that the virt resource started successfully?",
+          "answer": "The command used is crm_mon, which provides a summary of the cluster configuration, including the status of resources like adminvm."
+        },
+        {
+          "question": "What is the purpose of configuring a SAC HA admin node, and how does it differ from other high availability configurations?",
+          "answer": "The purpose of configuring a SAC HA admin node is to ensure continuous availability of the admin node in case of failures. Unlike other configurations, a SAC HA admin node requires two physical admin nodes and operates within a virtual machine that can failover between the two physical hosts."
+        },
+        {
+          "question": "What are the main steps involved in configuring a SAC HA admin node?",
+          "answer": "The main steps include:\n- Creating and installing the high availability (HA) software repositories on the physical admin nodes.\n- Preparing to run the HA admin node configuration script.\n- Running the high availability (HA) admin node configuration script.\n- Starting the HA virtual manager and installing the cluster manager on the virtual machine."
+        },
+        {
+          "question": "How is the installation of software repositories on each physical admin node accomplished?",
+          "answer": "The installation involves:\n- Logging into one of the physical admin nodes via SSH.\n- Copying the installation files (operating system .iso files) to /var/opt/sgi on the node.\n- Logging into the other admin node and using rsync to copy the files from one admin node to the other."
+        },
+        {
+          "question": "What is the purpose of setting the path to the .iso file for the admin node, and how is it done?",
+          "answer": "Setting the path to the .iso file is necessary for the admin_iso_path variable in the sac-ha-initial-setup.conf file. It ensures that the admin node can access the required installation files. It is done by creating a directory (/root/sw), copying the .iso file to that directory, and syncing it with the other admin node."
+        },
+        {
+          "question": "Why is it essential to ensure that both physical admin nodes are equipped with identical configurations?",
+          "answer": "Identical configurations ensure consistency and seamless failover between the physical admin nodes. In case of failover, the virtual machine hosting the admin node can smoothly transition between the nodes without compatibility issues."
+        }, {
+          "question": "What is the purpose of editing the setup script before running it?",
+          "answer": "The setup script configures the physical nodes to communicate with each other and the storage unit. Editing the script allows for providing necessary information specific to the cluster configuration before executing it."
+        },
+        {
+          "question": "How do you decide which node to designate as physical node 1 and physical node 2?",
+          "answer": "The designation of physical nodes is arbitrary but should be consistent across the setup. Each physical node sees itself as the primary node, and the other node as the secondary node."
+        },
+        {
+          "question": "What information is required from the output of the ip addr command, and why?",
+          "answer": "The required information includes interface names and MAC addresses. This information is used to specify the physical MAC addresses for each physical node and whether predictable network names are used."
+        },
+        {
+          "question": "How do you complete the lines in the sac-ha-initial-setup.conf file?",
+          "answer": "On physical node 1, the lines in the sac-ha-initial-setup.conf file that require editing must be completed. These lines pertain to the configuration of the two physical nodes for the HA admin node. Comments within the file provide guidance on how to complete each line."
+        },
+        {
+          "question": "What fields must be edited within the sac-ha-initial-setup.conf file?",
+          "answer": "Table 4: Configuration file inputs specifies the lines that must be edited within the sac-ha-initial-setup.conf file. These fields include information about the physical MAC addresses for each physical node and whether predictable network names are used. Other fields may need to be edited based on specific cluster configurations."
+        },
+        {
+          "question": "Why is it important to ensure that the cluster definition file describes the management network accurately?",
+          "answer": "Accurate description of the management network in the cluster definition file ensures proper configuration and prevents unexpected results. It allows for the correct setup of network interfaces and ensures smooth communication between nodes in the cluster."
+        }
+  ]
+}
